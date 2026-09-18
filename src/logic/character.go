@@ -50,3 +50,25 @@ func AccessInventory(c Character){
 		}
 	}
 }
+
+func MainMenu(c Character){
+	for{
+		fmt.Println("=== MENU PRINCIPAL ===")
+		fmt.Println("Afficher les infos du personnage")
+		fmt.Println("Afficher l'inventaire")
+		fmt.Println("Quitter")
+
+		var choice int
+		fmt.Scan(&choice)
+
+		if Scan(&choice) == fmt.Println("Afficher les infos du personnage"){
+			return DisplayInfo(c)
+		} else if Scan(&choice) == fmt.Println("Afficher l'inventaire"){
+			return AccessInventory(c)
+		}else if Scan(&choice) == fmt.Println("Quitter"){
+			return
+		}else{
+			fmt.Println("Choisis ce qui est proposé quiquiche")
+		}
+	}
+}
