@@ -20,10 +20,13 @@ func main() {
 		CurrentHP: 80,
 		Inventory: []string{"Katana Laser", "Revolver XRAY", "Fusil nucleaire"},
 	}
+	DisplayInfo(noah)
+}
 
-	fmt.Println("Nom :", noah.Name)
-	fmt.Println("Classe :", noah.Classe)
-	fmt.Println("Niveau :", noah.Lvl)
-	fmt.Println("PV :", noah.CurrentHP, "/", noah.MaxHP)
-	fmt.Println("Inventaire :", noah.Inventory)
+func DisplayInfo(c Character) {
+	fmt.Println("Nom :", c.Name)
+	fmt.Println("Classe :", c.Classe)
+	fmt.Println("Niveau :", c.Lvl)
+	fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
+	fmt.Println("Inventaire :", c.Inventory)
 }
