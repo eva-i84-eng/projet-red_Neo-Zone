@@ -11,15 +11,19 @@ type Character struct {
 	Inventory []string
 }
 
-func main() {
-	noah := Character{
-		Name:      "Noah",
-		Classe:    "vagabond",
-		Lvl:       1,
-		MaxHP:     100,
-		CurrentHP: 80,
-		Inventory: []string{"Katana Laser", "Revolver XRAY", "Fusil nucleaire"},
+func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string) Character {
+	return Character{
+		Name:      name,
+		Classe:    classe,
+		Lvl:       lvl,
+		MaxHP:     maxHP,
+		CurrentHP: currentHP,
+		Inventory: inventory,
 	}
+}
+
+func main() {
+	noah := initCharacter("Noah", "vagabond", 1, 100, 80, []string{"Katana Laser", "Revolver XRAY", "Fusil nucleaire"})
 
 	fmt.Println("Nom :", noah.Name)
 	fmt.Println("Classe :", noah.Classe)
