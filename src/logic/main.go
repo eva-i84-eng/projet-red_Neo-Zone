@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 func main() {
 	noah := Character{
 		Name:      "Noah",
@@ -10,5 +12,9 @@ func main() {
 		Inventory: []string{"Katana Laser", "Revolver XRAY", "Fusil nucleaire"},
 	}
 
-	_ = noah
+	fmt.Println("Nom :", noah.Name)
+	fmt.Println("Classe :", noah.Classe)
+	fmt.Println("Niveau :", noah.Lvl)
+	fmt.Println("PV :", noah.CurrentHP, "/", noah.MaxHP)
+	fmt.Println("Inventaire :", noah.Inventory)
 }
