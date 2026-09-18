@@ -38,7 +38,13 @@ func DisplayInfo(c Character) {
 	fmt.Println("Niveau :", c.Lvl)
 	fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
 	fmt.Println("Inventaire :", c.Inventory)
+<<<<<<< HEAD
 	fmt.Println("Sorts :", c.Sorts)
+=======
+	fmt.Println("Tapes 0 pour revenir au menu principal")
+	var back int
+	fmt.Scan(&back)
+>>>>>>> eva
 }
 
 func characterCreation() Character {
@@ -108,4 +114,36 @@ func AccessInventory(c Character) {
 			fmt.Println(i+1, "-", item)
 		}
 	}
+<<<<<<< HEAD
 }
+=======
+	fmt.Println("Tapes 0 pour revenir au menu principal")
+	var back int
+	fmt.Scan(&back)
+}
+
+func MainMenu(c Character) {
+	for {
+		fmt.Println("\n=== MENU PRINCIPAL ===")
+		fmt.Println("1 - Afficher les infos du personnage")
+		fmt.Println("2 - Afficher l'inventaire")
+		fmt.Println("3 - Quitter")
+		fmt.Print("Votre choix : ")
+
+		var choice int
+		fmt.Scan(&choice) // Récupère le nombre tapé par l'utilisateur (1, 2 ou 3)
+
+		switch choice {
+		case 1:
+			DisplayInfo(c) // On exécute la fonction, puis la boucle 'for' reprend
+		case 2:
+			AccessInventory(c) // Idem, puis la boucle reprend
+		case 3:
+			fmt.Println("Aller ouste !")
+			return // Seul le choix 3 utilise 'return' pour stopper la boucle et quitter le jeu
+		default:
+			fmt.Println("Choisis ce qui est proposé quiquiche")
+		}
+	}
+}
+>>>>>>> eva
