@@ -24,6 +24,14 @@ func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []s
 	}
 }
 
+func main() {
+	// Création du personnage via la fonction
+	noah := initCharacter("Noah", "vagabond", 1, 100, 80, []string{"Katana Laser", "Revolver XRAY", "Fusil Nucléaire"}, []string{"Coup de Poing"})
+
+	// Affichage des informations
+	DisplayInfo(noah)
+}
+
 func DisplayInfo(c Character) {
 	fmt.Println("Nom :", c.Name)
 	fmt.Println("Classe :", c.Classe)
@@ -87,4 +95,17 @@ func characterCreation() Character {
 	currentHP := maxHP / 2
 
 	return initCharacter(result, classe, 1, maxHP, currentHP, inventory, []string{"Coup de Poing"})
+}
+
+func AccessInventory(c Character) {
+	fmt.Println("=================================")
+	fmt.Println("     INVENTAIRE DU PERSONNAGE    ")
+	fmt.Println("=================================")
+	if len(c.Inventory) <= 0 {
+		fmt.Println("Votre inventaire est vide")
+	} else {
+		for i, item := range c.Inventory {
+			fmt.Println(i+1, "-", item)
+		}
+	}
 }
