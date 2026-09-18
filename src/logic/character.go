@@ -20,14 +20,13 @@ func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []s
 		CurrentHP: currentHP,
 		Inventory: inventory,
 	}
+	DisplayInfo(noah)
 }
 
-func main() {
-	noah := initCharacter("Noah", "vagabond", 1, 100, 80, []string{"Katana Laser", "Revolver XRAY", "Fusil nucleaire"})
-
-	fmt.Println("Nom :", noah.Name)
-	fmt.Println("Classe :", noah.Classe)
-	fmt.Println("Niveau :", noah.Lvl)
-	fmt.Println("PV :", noah.CurrentHP, "/", noah.MaxHP)
-	fmt.Println("Inventaire :", noah.Inventory)
+func DisplayInfo(c Character) {
+	fmt.Println("Nom :", c.Name)
+	fmt.Println("Classe :", c.Classe)
+	fmt.Println("Niveau :", c.Lvl)
+	fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
+	fmt.Println("Inventaire :", c.Inventory)
 }
