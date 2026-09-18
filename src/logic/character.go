@@ -20,6 +20,13 @@ func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []s
 		CurrentHP: currentHP,
 		Inventory: inventory,
 	}
+}
+
+func main() {
+	// Création du personnage via la fonction
+	noah := initCharacter("Noah", "vagabond", 1, 100, 80, []string{"Katana Laser", "Revolver XRAY"})
+
+	// Affichage des informations
 	DisplayInfo(noah)
 }
 
