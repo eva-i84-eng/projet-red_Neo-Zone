@@ -114,13 +114,13 @@ func AccessInventory(c Character) {
 			fmt.Println(i+1, "-", item)
 		}
 	}
-<<<<<<< HEAD
+
 }
 =======
 	fmt.Println("Tapes 0 pour revenir au menu principal")
 	var back int
 	fmt.Scan(&back)
-}
+
 
 func MainMenu(c Character) {
 	for {
@@ -146,4 +146,25 @@ func MainMenu(c Character) {
 		}
 	}
 }
->>>>>>> eva
+
+func AddInventory(c *Character, item string) {
+    c.Inventory = append(c.Inventory, item)
+}
+
+func Merchant(c *Character){
+	fmt.Println("\n=== C'EST PAS CHER, PROMIS ===")
+	fmt.Println("1 - Potion de vie (Gratuit)")
+	fmt.Println("0 - Retour")
+
+	var choice int
+	fmt.Scan(&choice)
+
+	switch choice {
+		case 1:
+			AddInventory(c, "Potion de vie")
+			fmt.Println("Aller c'est dans l'inventaire et utilise la bien t'as une sale tête")
+		case 0:
+			fmt.Println("C'est bon j'ai compris, dégages")
+			return
+	}
+}
