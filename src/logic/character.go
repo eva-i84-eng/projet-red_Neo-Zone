@@ -21,6 +21,7 @@ type Character struct {
 	Money             int
 	Sorts             []string
 	Equipment         Equipment
+
 }
 
 type Monster struct {
@@ -28,6 +29,10 @@ type Monster struct {
 	MaxHP     int
 	CurrentHP int
 	Damage    int
+	Initiative        int
+	CurrentExp        int
+	MaxExp            int
+
 }
 
 func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts []string) Character {
@@ -43,6 +48,8 @@ func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []s
 		InventoryUpgrades: 0,
 		Sorts:             sorts,
 		Money:             100,
+		MaxExp:            100,
+
 	}
 }
 
@@ -136,6 +143,7 @@ func Merchant(c *Character) {
 		fmt.Println("5 - Peau de Troll (7 pièces d'or)")
 		fmt.Println("6 - Cuir de Sanglier (3 pièces d'or)")
 		fmt.Println("7 - Plume de Corbeau (1 pièce d'or)")
+		fmt.Println("8 - Augmenter l'inventaire (30 pièces d'or)")
 		fmt.Println("0 - Retour au menu principal")
 		fmt.Print("Votre choix : ")
 
@@ -167,6 +175,14 @@ func Merchant(c *Character) {
 		case 7:
 			item = "Plume de Corbeau"
 			price = 1
+		case 8:
+			if c.Money >= 30 {
+				c.Money -= 30
+				upgradeInventorySlot(c)
+			} else {
+				fmt.Println("T’es fauché. Upgrade refusé.")
+			}
+			continue
 		case 0:
 			fmt.Println("C'est bon j'ai compris, dégage !")
 			return
@@ -271,6 +287,21 @@ func WhoAreThey(c *Character) {
 		case 1:
 			fmt.Println("Vous avez salué Diana ! Elle vous offre 10 pièces d'or.")
 			c.Money += 10
+
+func skill(c *Character) {
+	if c.Classe == "Samurai" {
+		c.Sorts = []string{"Tempete du ninja", "Coup de poing"}
+		return
+	} else if c.Classe == "Cowboy" {
+		c.Sorts = []string{"Slowing Time", "Coup de poing"}
+		return
+	}
+	c.Sorts = []string{"Coup de poing"}
+}
+
+func spellBook(c *Character) {
+	for _, j := range c.Sorts {
+		if j == "Boule de Feu" {
 			return
 		case 2:
 			fmt.Println("Michael vous chante une chanson, vos PV sont restaurés !")
@@ -283,3 +314,102 @@ func WhoAreThey(c *Character) {
 		}
 	}
 }
+
+	c.Sorts = append(c.Sorts, "Boule de Feu")
+}
+
+type Equipment struct {
+	Tete  string
+	Torse string
+	Pieds string
+}
+
+func addEquipment(char *Character, stuff string) {
+	if stuff == "Chapeau de l'aventurier" {
+		if char.Equipment.Tete != "" {
+			char.Inventory = append(char.Inventory, char.Equipment.Tete)
+			char.MaxHP -= 10
+		}
+		char.Equipment.Tete = stuff
+		char.MaxHP += 10
+	} else if stuff == "Tunique de l'aventurier" {
+		if char.Equipment.Torse != "" {
+			char.Inventory = append(char.Inventory, char.Equipment.Torse)
+			char.MaxHP -= 25
+		}
+		char.Equipment.Torse = stuff
+		char.MaxHP += 25
+	} else if stuff == "Bottes de l'aventurier" {
+		if char.Equipment.Pieds != "" {
+			char.Inventory = append(char.Inventory, char.Equipment.Pieds)
+			char.MaxHP -= 15
+		}
+		char.Equipment.Pieds = stuff
+		char.MaxHP += 15
+	} else {
+		fmt.Println("Cet équipement n'existe pas :", stuff)
+		return
+	}
+
+	for i, obj := range char.Inventory {
+		if obj == stuff {
+			char.Inventory = append(char.Inventory[:i], char.Inventory[i+1:]...)
+			break
+		}
+	}
+}
+
+type Monster struct {
+	Name       string
+	MaxHP      int
+	CurrentHP  int
+	Damage     int
+	Initiative int
+	Exp        int
+}
+
+func isDead(c *Character){
+	if c.CurrentHP <= 0 {
+		fmt.Println("Il a speedrun le respawn 💀")
+	}
+}
+
+
+func initGoblin(c *Monster) {
+	c.Name = "Gobelin d'entrainement"
+	c.MaxHP = 40
+	c.CurrentHP = 40
+	c.Damage = 5
+	c.Exp = 5
+}
+
+func characterTurn(c *Character, m *Monster) {
+    fmt.Printf("%s : %d/%d PV\n", c.Name, c.CurrentHP, c.MaxHP)
+    fmt.Printf("%s : %d/%d PV\n", m.Name, m.CurrentHP, m.MaxHP)
+    fmt.Println("1 - Attaquer")
+    fmt.Println("2 - Inventaire")
+
+    var choice int
+    fmt.Scan(&choice)
+
+    var action string
+
+    switch choice {
+    case 1:
+        action = "Attaque basique"
+        m.CurrentHP -= 5
+        if m.CurrentHP < 0 {
+            m.CurrentHP = 0
+        }
+        fmt.Printf("Vous utilisez %s et infligez 5 dégâts.\n", action)
+        fmt.Printf("PV restants de %s : %d\n", m.Name, m.CurrentHP)
+        if m.CurrentHP <= 0 {
+            fmt.Println("Vous avez gagné ! C'est pas trop tôt.")
+        }
+    case 2:
+        AccessInventory(c)
+    default:
+        fmt.Println("Choix invalide, ils sont où tes yeux ?!")
+    }
+}
+>>>>>>> main
