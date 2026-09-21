@@ -10,8 +10,9 @@ func combat(perso *Character, goblin *Monster) {
 
 func experience(perso *Character, goblin *Monster) {
 	if goblin.CurrentHP <= 0 {
-		perso.Lvl += goblin.Lvl
-		for perso.CurrentExp > perso.MaxExp {
+		perso.CurrentExp += goblin.Exp
+
+		for perso.CurrentExp >= perso.MaxExp {
 			perso.CurrentExp -= perso.MaxExp
 			perso.Lvl++
 			perso.MaxExp += 50
@@ -19,6 +20,5 @@ func experience(perso *Character, goblin *Monster) {
 			perso.MaxHP += 10
 			perso.CurrentHP += 10
 		}
-
 	}
 }

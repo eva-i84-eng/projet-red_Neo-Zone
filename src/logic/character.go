@@ -11,12 +11,12 @@ type Character struct {
 	Inventory  []string
 	Sorts      []string
 	Equipment  Equipment
-	initiative int
+	Initiative int
 	CurrentExp int
 	MaxExp     int
 }
 
-func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts, equipment Equipment) Character {
+func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory, sorts []string, equipment Equipment) Character {
 	return Character{
 		Name:      name,
 		Classe:    classe,
@@ -26,12 +26,13 @@ func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []s
 		Inventory: inventory,
 		Sorts:     sorts,
 		Equipment: equipment,
+		MaxExp:    100,
 	}
 }
 
 func main() {
 	// Création du personnage via la fonction
-	noah := initCharacter("Noah", "vagabond", 1, 100, 80, []string{"Katana Laser", "Revolver XRAY", "Fusil Nucléaire"}, []string{"Coup de Poing"})
+	noah := initCharacter("Noah", "vagabond", 1, 100, 80, []string{"Katana Laser", "Revolver XRAY", "Fusil Nucléaire"}, []string{"Coup de Poing"}, Equipment{})
 
 	// Affichage des informations
 	DisplayInfo(noah)
@@ -99,7 +100,7 @@ func characterCreation() Character {
 
 	currentHP := maxHP / 2
 
-	return initCharacter(result, classe, 1, maxHP, currentHP, inventory, []string{"Coup de Poing"})
+	return initCharacter(result, classe, 1, maxHP, currentHP, inventory, []string{"Coup de Poing"}, Equipment{})
 }
 
 func AccessInventory(c Character) {
@@ -144,9 +145,9 @@ func spellBook(c *Character) {
 }
 
 type Equipment struct {
-	tete  string
-	torse string
-	pieds string
+	Tete  string
+	Torse string
+	Pieds string
 }
 
 func addEquipment(char *Character, stuff string) {
@@ -189,12 +190,12 @@ type Monster struct {
 	MaxHP      int
 	CurrentHP  int
 	Damage     int
-	initiative int
+	Initiative int
 	Exp        int
 }
 
 func initGoblin(c *Monster) {
-	c.Name = "Gobelin d’entrainement"
+	c.Name = "Gobelin d'entrainement"
 	c.MaxHP = 40
 	c.CurrentHP = 40
 	c.Damage = 5
