@@ -3,32 +3,37 @@ package main
 import "fmt"
 
 type Character struct {
-	Name       string
-	Classe     string
-	Lvl        int
-	MaxHP      int
-	CurrentHP  int
-	MaxHPFinal int
-	Inventory  []string
-	MaxInventory int
+	Name              string
+	Classe            string
+	Lvl               int
+	MaxHP             int
+	CurrentHP         int
+	MaxHPFinal        int
+	Inventory         []string
+	MaxInventory      int
 	InventoryUpgrades int
-	Money      int
-	Sorts      []string
+	Money             int
+	Sorts             []string
+	Equipment         Equipment
+	Initiative        int
+	CurrentExp        int
+	MaxExp            int
 }
 
 func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts []string) Character {
 	return Character{
-		Name:       name,
-		Classe:     classe,
-		Lvl:        lvl,
-		MaxHP:      maxHP,
-		CurrentHP:  currentHP,
-		MaxHPFinal: 600,
-		Inventory:  inventory,
-		MaxInventory: 10,
+		Name:              name,
+		Classe:            classe,
+		Lvl:               lvl,
+		MaxHP:             maxHP,
+		CurrentHP:         currentHP,
+		MaxHPFinal:        600,
+		Inventory:         inventory,
+		MaxInventory:      10,
 		InventoryUpgrades: 0,
-		Sorts:      sorts,
-		Money:      100,
+		Sorts:             sorts,
+		Money:             100,
+		MaxExp:            100,
 	}
 }
 
@@ -275,7 +280,6 @@ func Blacksmith(c *Character) {
 	}
 }
 
-
 func removeItems(c *Character, itemsNeeded []string) bool {
 	tempInventory := append([]string{}, c.Inventory...)
 
@@ -304,7 +308,6 @@ func addItem(c *Character, item string) {
 	c.Inventory = append(c.Inventory, item)
 }
 
-
 func skill(c *Character) {
 	if c.Classe == "Samurai" {
 		c.Sorts = []string{"Tempete du ninja", "Coup de poing"}
@@ -326,9 +329,9 @@ func spellBook(c *Character) {
 }
 
 type Equipment struct {
-	tete  string
-	torse string
-	pieds string
+	Tete  string
+	Torse string
+	Pieds string
 }
 
 func addEquipment(char *Character, stuff string) {
@@ -367,15 +370,55 @@ func addEquipment(char *Character, stuff string) {
 }
 
 type Monster struct {
-	Name      string
-	MaxHP     int
-	CurrentHP int
-	Damage    int
+	Name       string
+	MaxHP      int
+	CurrentHP  int
+	Damage     int
+	Initiative int
+	Exp        int
 }
 
+func isDead(c *Character){
+	if c.CurrentHP <= 0 {
+		fmt.Println("Il a speedrun le respawn 💀")
+	}
+}
+
+
 func initGoblin(c *Monster) {
-	c.Name = "Gobelin d’entrainement"
+	c.Name = "Gobelin d'entrainement"
 	c.MaxHP = 40
 	c.CurrentHP = 40
 	c.Damage = 5
+	c.Exp = 5
+}
+
+func characterTurn(c *Character, m *Monster) {
+    fmt.Printf("%s : %d/%d PV\n", c.Name, c.CurrentHP, c.MaxHP)
+    fmt.Printf("%s : %d/%d PV\n", m.Name, m.CurrentHP, m.MaxHP)
+    fmt.Println("1 - Attaquer")
+    fmt.Println("2 - Inventaire")
+
+    var choice int
+    fmt.Scan(&choice)
+
+    var action string
+
+    switch choice {
+    case 1:
+        action = "Attaque basique"
+        m.CurrentHP -= 5
+        if m.CurrentHP < 0 {
+            m.CurrentHP = 0
+        }
+        fmt.Printf("Vous utilisez %s et infligez 5 dégâts.\n", action)
+        fmt.Printf("PV restants de %s : %d\n", m.Name, m.CurrentHP)
+        if m.CurrentHP <= 0 {
+            fmt.Println("Vous avez gagné ! C'est pas trop tôt.")
+        }
+    case 2:
+        AccessInventory(c)
+    default:
+        fmt.Println("Choix invalide, ils sont où tes yeux ?!")
+    }
 }
