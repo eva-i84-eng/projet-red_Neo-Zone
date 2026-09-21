@@ -124,7 +124,8 @@ func MainMenu(c *Character) {
 		fmt.Println("1 - Afficher les infos du personnage")
 		fmt.Println("2 - Afficher l'inventaire")
 		fmt.Println("3 - Le marchand raleur")
-		fmt.Println("4 - Quitter")
+		fmt.Println("4 - Le forgeron vantard")
+		fmt.Println("5 - Quitter")
 		fmt.Print("Votre choix : ")
 
 		var choice int
@@ -138,6 +139,8 @@ func MainMenu(c *Character) {
 		case 3:
 			Merchant(c)
 		case 4:
+			Blacksmith(c)
+		case 5:
 			fmt.Println("Aller ouste !")
 			return
 		default:
@@ -206,6 +209,48 @@ func Merchant(c *Character) {
 			fmt.Printf("Tu as acheté : %s pour %d pièces d'or.\n", item, price)
 		} else {
 			fmt.Println("T'as pas assez de thunes, repasses quand tu seras riche !")
+		}
+	}
+}
+
+func Blacksmith(c *Character) {
+	for {
+		fmt.Println("\n=== LE FORGERON ===")
+		fmt.Println("Or disponible :", c.Money)
+		fmt.Println("Fabriquer un équipement coûte 5 pièces d'or.")
+		fmt.Println("1 - Chapeau de l'aventurier")
+		fmt.Println("2 - Tunique de l'aventurier")
+		fmt.Println("3 - Bottes de l'aventurier")
+		fmt.Println("0 - Retour au menu principal")
+		fmt.Print("Votre choix : ")
+
+		var choice int
+		fmt.Scan(&choice)
+
+		var equipment string
+		cost := 5
+
+		switch choice {
+		case 1:
+			equipment = "Chapeau de l'aventurier"
+		case 2:
+			equipment = "Tunique de l'aventurier"
+		case 3:
+			equipment = "Bottes de l'aventurier"
+		case 0:
+			fmt.Println("Tu reviendras vite de toutes façon, je suis le meilleur forgeron !")
+			return
+		default:
+			fmt.Println("Je pourrais le faire hein, je peux TOUT faire mais j'ai pas envie !")
+			continue
+		}
+
+		if c.Money >= cost {
+			c.Money -= cost
+			AddInventory(c, equipment)
+			fmt.Printf("Le forgeron vous fabrique : %s pour %d pièces d'or !\n", equipment, cost)
+		} else {
+			fmt.Println("Pas assez de pièces ! tu veux une réduc ? bah nan je suis déjà trop gentil comme ça !")
 		}
 	}
 }
