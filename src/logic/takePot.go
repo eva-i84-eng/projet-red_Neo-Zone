@@ -11,7 +11,7 @@ func takePot(c *Character) {
 		}
 	}
 	if index == -1 {
-		fmt.Println("Tu n'as pas de potion, la famille.")
+		fmt.Println("Tes potions sont vides, ton avenir aussi.")
 		return
 	}
 	c.Inventory = append(c.Inventory[:index], c.Inventory[index+1:]...)
@@ -19,5 +19,5 @@ func takePot(c *Character) {
 	if c.CurrentHP > c.MaxHP {
 		c.CurrentHP = c.MaxHP
 	}
-	fmt.Println("")
+	fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
 }
