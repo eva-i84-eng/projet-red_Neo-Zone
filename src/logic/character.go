@@ -151,20 +151,62 @@ func AddInventory(c *Character, item string) {
 }
 
 func Merchant(c *Character) {
-	fmt.Println("\n=== C'EST PAS CHER, PROMIS ===")
-	fmt.Println("1 - Potion de vie (Gratuit)")
-	fmt.Println("0 - Retour")
+	for {
+		fmt.Println("\n=== MARCHAND RÂLEUR ===")
+		fmt.Println("Or disponible :", c.Money)
+		fmt.Println("1 - Potion de vie (3 pièces d'or)")
+		fmt.Println("2 - Potion de poison (6 pièces d'or)")
+		fmt.Println("3 - Livre de Sort : Boule de Feu (25 pièces d'or)")
+		fmt.Println("4 - Fourrure de Loup (4 pièces d'or)")
+		fmt.Println("5 - Peau de Troll (7 pièces d'or)")
+		fmt.Println("6 - Cuir de Sanglier (3 pièces d'or)")
+		fmt.Println("7 - Plume de Corbeau (1 pièce d'or)")
+		fmt.Println("0 - Retour au menu principal")
+		fmt.Print("Votre choix : ")
 
-	var choice int
-	fmt.Scan(&choice)
+		var choice int
+		fmt.Scan(&choice)
 
-	switch choice {
-	case 1:
-		AddInventory(c, "Potion de vie")
-		fmt.Println("Aller c'est dans l'inventaire et utilise la bien t'as une sale tête")
-	case 0:
-		fmt.Println("C'est bon j'ai compris, dégages")
-		return
+		var item string
+		var price int
+
+		switch choice {
+		case 1:
+			item = "Potion de vie"
+			price = 3
+		case 2:
+			item = "Potion de poison"
+			price = 6
+		case 3:
+			item = "Livre de Sort : Boule de Feu"
+			price = 25
+		case 4:
+			item = "Fourrure de Loup"
+			price = 4
+		case 5:
+			item = "Peau de Troll"
+			price = 7
+		case 6:
+			item = "Cuir de Sanglier"
+			price = 3
+		case 7:
+			item = "Plume de Corbeau"
+			price = 1
+		case 0:
+			fmt.Println("C'est bon j'ai compris, dégages !")
+			return
+		default:
+			fmt.Println("Choix invalide, achète quelque chose de vrai !")
+			continue
+		}
+
+		if c.Money >= price {
+			c.Money -= price
+			AddInventory(c, item)
+			fmt.Printf("Tu as acheté : %s pour %d pièces d'or.\n", item, price)
+		} else {
+			fmt.Println("T'as pas assez de thunes, repasses quand tu seras riche !")
+		}
 	}
 }
 
