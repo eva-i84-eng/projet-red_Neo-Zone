@@ -146,7 +146,6 @@ type Equipment struct {
 	pieds string
 }
 
-
 func addEquipment(char *Character, stuff string) {
 	if stuff == "Chapeau de l'aventurier" {
 		if char.Equipment.Tete != "" {
