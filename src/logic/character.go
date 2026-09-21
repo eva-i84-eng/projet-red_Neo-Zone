@@ -3,33 +3,34 @@ package main
 import "fmt"
 
 type Character struct {
-	Name      string
-	Classe    string
-	Lvl       int
-	MaxHP     int
-	CurrentHP int
-	Inventory []string
-	Sorts     []string
+	Name       string
+	Classe     string
+	Lvl        int
+	MaxHP      int
+	CurrentHP  int
+	MaxHPFinal int
+	Inventory  []string
+	Money      int
+	Sorts      []string
 }
 
 func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts []string) Character {
 	return Character{
-		Name:      name,
-		Classe:    classe,
-		Lvl:       lvl,
-		MaxHP:     maxHP,
-		CurrentHP: currentHP,
-		Inventory: inventory,
-		Sorts:     sorts,
+		Name:       name,
+		Classe:     classe,
+		Lvl:        lvl,
+		MaxHP:      maxHP,
+		CurrentHP:  currentHP,
+		MaxHPFinal: 600,
+		Inventory:  inventory,
+		Sorts:      sorts,
+		Money:      100,
 	}
 }
 
 func main() {
-	// Création du personnage via la fonction
-	noah := initCharacter("Noah", "vagabond", 1, 100, 80, []string{"Katana Laser", "Revolver XRAY", "Fusil Nucléaire"}, []string{"Coup de Poing"})
-
-	// Affichage des informations
-	DisplayInfo(noah)
+	noah := initCharacter("Noah", "vagabond", 1, 100, 80, []string{"Katana Laser", "Revolver XRAY"}, []string{"Coup de Poing"})
+	MainMenu(&noah)
 }
 
 func DisplayInfo(c *Character) {
@@ -37,6 +38,7 @@ func DisplayInfo(c *Character) {
 	fmt.Println("Classe :", c.Classe)
 	fmt.Println("Niveau :", c.Lvl)
 	fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
+	fmt.Println("Or :", c.Money)
 	fmt.Println("Inventaire :", c.Inventory)
 	fmt.Println("Tapes 0 pour revenir au menu principal")
 	var back int
@@ -110,6 +112,7 @@ func AccessInventory(c *Character) {
 			fmt.Println(i+1, "-", item)
 		}
 	}
+
 	fmt.Println("Tapes 0 pour revenir au menu principal")
 	var back int
 	fmt.Scan(&back)
@@ -125,18 +128,18 @@ func MainMenu(c *Character) {
 		fmt.Print("Votre choix : ")
 
 		var choice int
-		fmt.Scan(&choice) // Récupère le nombre tapé par l'utilisateur (1, 2 ou 3)
+		fmt.Scan(&choice)
 
 		switch choice {
 		case 1:
-			DisplayInfo(c) // On exécute la fonction, puis la boucle 'for' reprend
+			DisplayInfo(c)
 		case 2:
-			AccessInventory(c) // Idem, puis la boucle reprend
+			AccessInventory(c)
 		case 3:
 			Merchant(c)
 		case 4:
 			fmt.Println("Aller ouste !")
-			return // Seul le choix 3 utilise 'return' pour stopper la boucle et quitter le jeu
+			return
 		default:
 			fmt.Println("Choisis ce qui est proposé quiquiche")
 		}
@@ -144,10 +147,10 @@ func MainMenu(c *Character) {
 }
 
 func AddInventory(c *Character, item string) {
-    c.Inventory = append(c.Inventory, item)
+	c.Inventory = append(c.Inventory, item)
 }
 
-func Merchant(c *Character){
+func Merchant(c *Character) {
 	fmt.Println("\n=== C'EST PAS CHER, PROMIS ===")
 	fmt.Println("1 - Potion de vie (Gratuit)")
 	fmt.Println("0 - Retour")
@@ -156,11 +159,11 @@ func Merchant(c *Character){
 	fmt.Scan(&choice)
 
 	switch choice {
-		case 1:
-			AddInventory(c, "Potion de vie")
-			fmt.Println("Aller c'est dans l'inventaire et utilise la bien t'as une sale tête")
-		case 0:
-			fmt.Println("C'est bon j'ai compris, dégages")
-			return
+	case 1:
+		AddInventory(c, "Potion de vie")
+		fmt.Println("Aller c'est dans l'inventaire et utilise la bien t'as une sale tête")
+	case 0:
+		fmt.Println("C'est bon j'ai compris, dégages")
+		return
 	}
 }
