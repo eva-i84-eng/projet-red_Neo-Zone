@@ -218,9 +218,9 @@ func Blacksmith(c *Character) {
 		fmt.Println("\n=== LE FORGERON ===")
 		fmt.Println("Or disponible :", c.Money)
 		fmt.Println("Fabriquer un équipement coûte 5 pièces d'or.")
-		fmt.Println("1 - Chapeau de l'aventurier")
-		fmt.Println("2 - Tunique de l'aventurier")
-		fmt.Println("3 - Bottes de l'aventurier")
+		fmt.Println("1 - Chapeau de l'aventurier (1 Plume de Corbeau, 1 Cuir de Sanglier)")
+		fmt.Println("2 - Tunique de l'aventurier (2 Fourrures de Loup, 1 Peau de Troll)")
+		fmt.Println("3 - Bottes de l'aventurier  (1 Fourrure de Loup, 1 Cuir de Sanglier)")
 		fmt.Println("0 - Retour au menu principal")
 		fmt.Print("Votre choix : ")
 
@@ -228,31 +228,59 @@ func Blacksmith(c *Character) {
 		fmt.Scan(&choice)
 
 		var equipment string
+		var neededItems []string
 		cost := 5
 
 		switch choice {
 		case 1:
 			equipment = "Chapeau de l'aventurier"
+			neededItems = []string{"Plume de Corbeau", "Cuir de Sanglier"}
 		case 2:
 			equipment = "Tunique de l'aventurier"
+			neededItems = []string{"Fourrure de Loup", "Fourrure de Loup", "Peau de Troll"}
 		case 3:
 			equipment = "Bottes de l'aventurier"
+			neededItems = []string{"Fourrure de Loup", "Cuir de Sanglier"}
 		case 0:
-			fmt.Println("Tu reviendras vite de toutes façon, je suis le meilleur forgeron !")
+			fmt.Println("Tu reviendras vite de toute façon, je suis le meilleur forgeron !")
 			return
 		default:
 			fmt.Println("Je pourrais le faire hein, je peux TOUT faire mais j'ai pas envie !")
 			continue
 		}
+		if c.Money < cost {
+			fmt.Println("Pas assez de pièces ! Tu veux une réduc ? Bah nan, je suis déjà trop gentil comme ça !")
+			continue
+		}
+		if !removeItems(c, neededItems) {
+			fmt.Println("Il te manque des composants ! Quoi, tu croyais que j'allais faire de la magie sans matières premières ? Repasse quand tu auras le matos !")
+			continue
+		}
+		c.Money -= cost
+		AddInventory(c, equipment)
+		fmt.Printf("Regarde-moi cette merveille ! Je t'ai fabriqué : %s pour %d pièces d'or !\n", equipment, cost)
+	}
+}
 
-		if c.Money >= cost {
-			c.Money -= cost
-			AddInventory(c, equipment)
-			fmt.Printf("Le forgeron vous fabrique : %s pour %d pièces d'or !\n", equipment, cost)
-		} else {
-			fmt.Println("Pas assez de pièces ! tu veux une réduc ? bah nan je suis déjà trop gentil comme ça !")
+
+func removeItems(c *Character, itemsNeeded []string) bool {
+	tempInventory := append([]string{}, c.Inventory...)
+
+	for _, needed := range itemsNeeded {
+		found := false
+		for i, item := range tempInventory {
+			if item == needed {
+				tempInventory = append(tempInventory[:i], tempInventory[i+1:]...)
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
 		}
 	}
+	c.Inventory = tempInventory
+	return true
 }
 
 func addItem(c *Character, item string) {
