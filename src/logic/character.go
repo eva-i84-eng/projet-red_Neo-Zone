@@ -364,9 +364,46 @@ type Monster struct {
 	Damage    int
 }
 
+func isDead(c *Character){
+	if c.CurrentHP <= 0 {
+		fmt.Println("Il a speedrun le respawn 💀")
+	}
+}
+
+
 func initGoblin(c *Monster) {
 	c.Name = "Gobelin d’entrainement"
 	c.MaxHP = 40
 	c.CurrentHP = 40
 	c.Damage = 5
+}
+
+func characterTurn(c *Character, m *Monster) {
+    fmt.Printf("%s : %d/%d PV\n", c.Name, c.CurrentHP, c.MaxHP)
+    fmt.Printf("%s : %d/%d PV\n", m.Name, m.CurrentHP, m.MaxHP)
+    fmt.Println("1 - Attaquer")
+    fmt.Println("2 - Inventaire")
+
+    var choice int
+    fmt.Scan(&choice)
+
+    var action string
+
+    switch choice {
+    case 1:
+        action = "Attaque basique"
+        m.CurrentHP -= 5
+        if m.CurrentHP < 0 {
+            m.CurrentHP = 0
+        }
+        fmt.Printf("Vous utilisez %s et infligez 5 dégâts.\n", action)
+        fmt.Printf("PV restants de %s : %d\n", m.Name, m.CurrentHP)
+        if m.CurrentHP <= 0 {
+            fmt.Println("Vous avez gagné ! C'est pas trop tôt.")
+        }
+    case 2:
+        AccessInventory(c)
+    default:
+        fmt.Println("Choix invalide, ils sont où tes yeux ?!")
+    }
 }
