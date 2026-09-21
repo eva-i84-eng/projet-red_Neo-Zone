@@ -10,6 +10,8 @@ type Character struct {
 	CurrentHP  int
 	MaxHPFinal int
 	Inventory  []string
+	MaxInventory int
+	InventoryUpgrades int
 	Money      int
 	Sorts      []string
 }
@@ -23,6 +25,8 @@ func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []s
 		CurrentHP:  currentHP,
 		MaxHPFinal: 600,
 		Inventory:  inventory,
+		MaxInventory: 10,
+		InventoryUpgrades: 0,
 		Sorts:      sorts,
 		Money:      100,
 	}
