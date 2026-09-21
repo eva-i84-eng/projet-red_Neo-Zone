@@ -181,10 +181,16 @@ func addEquipment(char *Character, stuff string) {
 	}
 }
 
-
-type Monster struct{
-	Name string
-	MaxHP int
+type Monster struct {
+	Name      string
+	MaxHP     int
 	CurrentHP int
-	Damage int
+	Damage    int
+}
+
+func initGoblin(c *Monster) {
+	c.Name = "Gobelin d’entrainement"
+	c.MaxHP = 40
+	c.CurrentHP = 40
+	c.Damage = 5
 }
