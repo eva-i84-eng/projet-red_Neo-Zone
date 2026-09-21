@@ -167,3 +167,39 @@ func Merchant(c *Character) {
 		return
 	}
 }
+
+func addItem(c *Character, item string) {
+	if len(c.Inventory) >= 10 {
+		fmt.Println("L'inventaire est plein. Nous ne pouvons accepter :", item)
+		return
+	}
+	c.Inventory = append(c.Inventory, item)
+}
+
+
+func skill(c *Character) {
+	if c.Classe == "Samurai" {
+		c.Sorts = []string{"Tempete du ninja", "Coup de poing"}
+		return
+	} else if c.Classe == "Cowboy" {
+		c.Sorts = []string{"Slowing Time", "Coup de poing"}
+		return
+	}
+	c.Sorts = []string{"Coup de poing"}
+}
+
+func spellBook(c *Character) {
+	for _, j := range c.Sorts {
+		if j == "Boule de Feu" {
+			return
+		}
+	}
+	c.Sorts = append(c.Sorts, "Boule de Feu")
+}
+
+type Equipment struct {
+	tete  string
+	torse string
+	pieds string
+}
+>>>>>>> 4ed7e7b08df46ba947a7abce41dae5aaa5221713
