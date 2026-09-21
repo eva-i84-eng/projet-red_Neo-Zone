@@ -180,3 +180,11 @@ func addEquipment(char *Character, stuff string) {
 		}
 	}
 }
+
+
+type Monster struct{
+	Name string
+	MaxHP int
+	CurrentHP int
+	Damage int
+}
