@@ -10,9 +10,10 @@ type Character struct {
 	CurrentHP int
 	Inventory []string
 	Sorts     []string
+	Equipment Equipment
 }
 
-func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts []string) Character {
+func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts, equipment Equipment) Character {
 	return Character{
 		Name:      name,
 		Classe:    classe,
@@ -21,6 +22,7 @@ func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []s
 		CurrentHP: currentHP,
 		Inventory: inventory,
 		Sorts:     sorts,
+		Equipment: equipment,
 	}
 }
 
@@ -136,4 +138,10 @@ func spellBook(c *Character) {
 		}
 	}
 	c.Sorts = append(c.Sorts, "Boule de Feu")
+}
+
+type Equipment struct {
+	tete  string
+	torse string
+	pieds string
 }
