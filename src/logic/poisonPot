@@ -1,0 +1,15 @@
+//tâche 9
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func poisonPot(c *Character){
+	for i:=0; i<=2; i++{
+		c.CurrentHP -= 10
+		fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
+		time.Sleep(1 * time.Second)
+	}
+}

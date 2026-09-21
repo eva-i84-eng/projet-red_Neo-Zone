@@ -168,6 +168,7 @@ func Merchant(c *Character) {
 		fmt.Println("5 - Peau de Troll (7 pièces d'or)")
 		fmt.Println("6 - Cuir de Sanglier (3 pièces d'or)")
 		fmt.Println("7 - Plume de Corbeau (1 pièce d'or)")
+		fmt.Println("8 - Augmenter l'inventaire (30 pièces d'or)")
 		fmt.Println("0 - Retour au menu principal")
 		fmt.Print("Votre choix : ")
 
@@ -199,8 +200,16 @@ func Merchant(c *Character) {
 		case 7:
 			item = "Plume de Corbeau"
 			price = 1
+		case 8:
+			if c.Money >= 30 {
+				c.Money -= 30
+				upgradeInventorySlot(c)
+			} else {
+				fmt.Println("T’es fauché. Upgrade refusé.")
+			}
+			continue
 		case 0:
-			fmt.Println("C'est bon j'ai compris, dégages !")
+			fmt.Println("C'est bon j'ai compris, dégage !")
 			return
 		default:
 			fmt.Println("Choix invalide, achète quelque chose de vrai !")
