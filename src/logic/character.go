@@ -3,14 +3,17 @@ package main
 import "fmt"
 
 type Character struct {
-	Name      string
-	Classe    string
-	Lvl       int
-	MaxHP     int
-	CurrentHP int
-	Inventory []string
-	Sorts     []string
-	Equipment Equipment
+	Name       string
+	Classe     string
+	Lvl        int
+	MaxHP      int
+	CurrentHP  int
+	Inventory  []string
+	Sorts      []string
+	Equipment  Equipment
+	initiative int
+	CurrentExp int
+	MaxExp     int
 }
 
 func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts, equipment Equipment) Character {
@@ -182,10 +185,12 @@ func addEquipment(char *Character, stuff string) {
 }
 
 type Monster struct {
-	Name      string
-	MaxHP     int
-	CurrentHP int
-	Damage    int
+	Name       string
+	MaxHP      int
+	CurrentHP  int
+	Damage     int
+	initiative int
+	Exp        int
 }
 
 func initGoblin(c *Monster) {
@@ -193,4 +198,5 @@ func initGoblin(c *Monster) {
 	c.MaxHP = 40
 	c.CurrentHP = 40
 	c.Damage = 5
+	c.Exp = 5
 }
