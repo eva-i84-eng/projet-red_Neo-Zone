@@ -145,3 +145,39 @@ type Equipment struct {
 	torse string
 	pieds string
 }
+
+
+func addEquipment(char *Character, stuff string) {
+	if stuff == "Chapeau de l'aventurier" {
+		if char.Equipment.Tete != "" {
+			char.Inventory = append(char.Inventory, char.Equipment.Tete)
+			char.MaxHP -= 10
+		}
+		char.Equipment.Tete = stuff
+		char.MaxHP += 10
+	} else if stuff == "Tunique de l'aventurier" {
+		if char.Equipment.Torse != "" {
+			char.Inventory = append(char.Inventory, char.Equipment.Torse)
+			char.MaxHP -= 25
+		}
+		char.Equipment.Torse = stuff
+		char.MaxHP += 25
+	} else if stuff == "Bottes de l'aventurier" {
+		if char.Equipment.Pieds != "" {
+			char.Inventory = append(char.Inventory, char.Equipment.Pieds)
+			char.MaxHP -= 15
+		}
+		char.Equipment.Pieds = stuff
+		char.MaxHP += 15
+	} else {
+		fmt.Println("Cet équipement n'existe pas :", stuff)
+		return
+	}
+
+	for i, obj := range char.Inventory {
+		if obj == stuff {
+			char.Inventory = append(char.Inventory[:i], char.Inventory[i+1:]...)
+			break
+		}
+	}
+}
