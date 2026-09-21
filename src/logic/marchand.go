@@ -9,13 +9,17 @@ func addInventory(c *Character, item string){
 
 func Marchand(c *Character){
 	choix := 0
-	fmt.Println("1.Potion de vie", "2. Quitter")
+	fmt.Println("1. Potion de vie", "2. Potion de poison", "3. Quitter")
 	fmt.Scanln(&choix)
 	if choix == 1{
 		addInventory(c, "Potion de vie")
 		fmt.Println("Potion de vie a bien été ajoutée.")
 	}
-	if choix ==2{
+	if choix == 2{
+		addInventory(c, "Potion de poison")
+		fmt.Println("Potion de poison ajoutée...")
+	}
+	if choix ==3{
 		fmt.Println("Sayounara, khoya.")
 	}
 }
