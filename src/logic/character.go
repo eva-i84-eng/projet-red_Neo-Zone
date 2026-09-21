@@ -2,33 +2,47 @@ package main
 
 import "fmt"
 
+type Equipment struct {
+	Tete  string
+	Torse string
+	Pieds string
+}
+
 type Character struct {
-	Name       string
-	Classe     string
-	Lvl        int
-	MaxHP      int
-	CurrentHP  int
-	MaxHPFinal int
-	Inventory  []string
-	MaxInventory int
+	Name              string
+	Classe            string
+	Lvl               int
+	MaxHP             int
+	CurrentHP         int
+	MaxHPFinal        int
+	Inventory         []string
+	MaxInventory      int
 	InventoryUpgrades int
-	Money      int
-	Sorts      []string
+	Money             int
+	Sorts             []string
+	Equipment         Equipment
+}
+
+type Monster struct {
+	Name      string
+	MaxHP     int
+	CurrentHP int
+	Damage    int
 }
 
 func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts []string) Character {
 	return Character{
-		Name:       name,
-		Classe:     classe,
-		Lvl:        lvl,
-		MaxHP:      maxHP,
-		CurrentHP:  currentHP,
-		MaxHPFinal: 600,
-		Inventory:  inventory,
-		MaxInventory: 10,
+		Name:              name,
+		Classe:            classe,
+		Lvl:               lvl,
+		MaxHP:             maxHP,
+		CurrentHP:         currentHP,
+		MaxHPFinal:        600,
+		Inventory:         inventory,
+		MaxInventory:      10,
 		InventoryUpgrades: 0,
-		Sorts:      sorts,
-		Money:      100,
+		Sorts:             sorts,
+		Money:             100,
 	}
 }
 
@@ -38,78 +52,24 @@ func main() {
 }
 
 func DisplayInfo(c *Character) {
+	fmt.Println("\n=== INFORMATIONS ===")
 	fmt.Println("Nom :", c.Name)
 	fmt.Println("Classe :", c.Classe)
 	fmt.Println("Niveau :", c.Lvl)
 	fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
 	fmt.Println("Or :", c.Money)
-	fmt.Println("Inventaire :", c.Inventory)
-	fmt.Println("Tapes 0 pour revenir au menu principal")
+	fmt.Println("Sorts :", c.Sorts)
+	fmt.Println("Équipement :", c.Equipment)
+	fmt.Println("Tapez 0 pour revenir au menu principal")
 	var back int
 	fmt.Scan(&back)
 }
 
-func characterCreation() Character {
-	var name string
-	valid := false
-
-	for !valid {
-		fmt.Print("Entrez le nom de votre personnage : ")
-		fmt.Scan(&name)
-
-		valid = true
-		for _, c := range name {
-			if (c < 'a' || c > 'z') && (c < 'A' || c > 'Z') {
-				valid = false
-			}
-		}
-
-		if !valid {
-			fmt.Println("Nom invalide, uniquement des lettres.")
-		}
-	}
-
-	result := ""
-	for i, c := range name {
-		if i == 0 && c >= 'a' && c <= 'z' {
-			c = c - 32
-		}
-		if i > 0 && c >= 'A' && c <= 'Z' {
-			c = c + 32
-		}
-		result += string(c)
-	}
-
-	var classe string
-	var maxHP int
-	var inventory []string
-
-	for {
-		fmt.Print("Choisissez votre classe (Samurai, Cowboy) : ")
-		fmt.Scan(&classe)
-
-		if classe == "Samurai" {
-			maxHP = 80
-			inventory = []string{"katana laser", "shuriken G300", "Odachi"}
-			break
-		} else if classe == "Cowboy" {
-			maxHP = 100
-			inventory = []string{"Revolver XRAY", "Fusil nucléaire", "Fusil Evans"}
-			break
-		}
-		fmt.Println("Votre classe n'est pas disponible. Choisissez Samurai ou Cowboy.")
-	}
-
-	currentHP := maxHP / 2
-
-	return initCharacter(result, classe, 1, maxHP, currentHP, inventory, []string{"Coup de Poing"})
-}
-
 func AccessInventory(c *Character) {
+	fmt.Println("\n=================================")
+	fmt.Println("    INVENTAIRE DU PERSONNAGE    ")
 	fmt.Println("=================================")
-	fmt.Println("     INVENTAIRE DU PERSONNAGE    ")
-	fmt.Println("=================================")
-	if len(c.Inventory) <= 0 {
+	if len(c.Inventory) == 0 {
 		fmt.Println("Votre inventaire est vide")
 	} else {
 		for i, item := range c.Inventory {
@@ -117,9 +77,18 @@ func AccessInventory(c *Character) {
 		}
 	}
 
-	fmt.Println("Tapes 0 pour revenir au menu principal")
+	fmt.Println("Tapez 0 pour revenir au menu principal")
 	var back int
 	fmt.Scan(&back)
+}
+
+func addItem(c *Character, item string) bool {
+	if len(c.Inventory) >= c.MaxInventory {
+		fmt.Println("L'inventaire est plein ! Impossible d'ajouter :", item)
+		return false
+	}
+	c.Inventory = append(c.Inventory, item)
+	return true
 }
 
 func MainMenu(c *Character) {
@@ -127,9 +96,10 @@ func MainMenu(c *Character) {
 		fmt.Println("\n=== MENU PRINCIPAL ===")
 		fmt.Println("1 - Afficher les infos du personnage")
 		fmt.Println("2 - Afficher l'inventaire")
-		fmt.Println("3 - Le marchand raleur")
+		fmt.Println("3 - Le marchand râleur")
 		fmt.Println("4 - Le forgeron vantard")
-		fmt.Println("5 - Quitter")
+		fmt.Println("5 - Qui sont-ils ?")
+		fmt.Println("6 - Quitter")
 		fmt.Print("Votre choix : ")
 
 		var choice int
@@ -145,16 +115,14 @@ func MainMenu(c *Character) {
 		case 4:
 			Blacksmith(c)
 		case 5:
+			WhoAreThey(c)
+		case 6:
 			fmt.Println("Aller ouste !")
 			return
 		default:
-			fmt.Println("Choisis ce qui est proposé quiquiche")
+			fmt.Println("Choisis ce qui est proposé !")
 		}
 	}
-}
-
-func AddInventory(c *Character, item string) {
-	c.Inventory = append(c.Inventory, item)
 }
 
 func Merchant(c *Character) {
@@ -200,19 +168,20 @@ func Merchant(c *Character) {
 			item = "Plume de Corbeau"
 			price = 1
 		case 0:
-			fmt.Println("C'est bon j'ai compris, dégages !")
+			fmt.Println("C'est bon j'ai compris, dégage !")
 			return
 		default:
-			fmt.Println("Choix invalide, achète quelque chose de vrai !")
+			fmt.Println("Choix invalide !")
 			continue
 		}
 
 		if c.Money >= price {
-			c.Money -= price
-			AddInventory(c, item)
-			fmt.Printf("Tu as acheté : %s pour %d pièces d'or.\n", item, price)
+			if addItem(c, item) {
+				c.Money -= price
+				fmt.Printf("Tu as acheté : %s pour %d pièces d'or.\n", item, price)
+			}
 		} else {
-			fmt.Println("T'as pas assez de thunes, repasses quand tu seras riche !")
+			fmt.Println("T'as pas assez de thunes !")
 		}
 	}
 }
@@ -221,7 +190,6 @@ func Blacksmith(c *Character) {
 	for {
 		fmt.Println("\n=== LE FORGERON ===")
 		fmt.Println("Or disponible :", c.Money)
-		fmt.Println("Fabriquer un équipement coûte 5 pièces d'or.")
 		fmt.Println("1 - Chapeau de l'aventurier (1 Plume de Corbeau, 1 Cuir de Sanglier)")
 		fmt.Println("2 - Tunique de l'aventurier (2 Fourrures de Loup, 1 Peau de Troll)")
 		fmt.Println("3 - Bottes de l'aventurier  (1 Fourrure de Loup, 1 Cuir de Sanglier)")
@@ -246,26 +214,27 @@ func Blacksmith(c *Character) {
 			equipment = "Bottes de l'aventurier"
 			neededItems = []string{"Fourrure de Loup", "Cuir de Sanglier"}
 		case 0:
-			fmt.Println("Tu reviendras vite de toute façon, je suis le meilleur forgeron !")
 			return
 		default:
-			fmt.Println("Je pourrais le faire hein, je peux TOUT faire mais j'ai pas envie !")
+			fmt.Println("Choix invalide !")
 			continue
 		}
+
 		if c.Money < cost {
-			fmt.Println("Pas assez de pièces ! Tu veux une réduc ? Bah nan, je suis déjà trop gentil comme ça !")
+			fmt.Println("Pas assez de pièces !")
 			continue
 		}
+
 		if !removeItems(c, neededItems) {
-			fmt.Println("Il te manque des composants ! Quoi, tu croyais que j'allais faire de la magie sans matières premières ? Repasse quand tu auras le matos !")
+			fmt.Println("Il te manque des composants !")
 			continue
 		}
+
 		c.Money -= cost
-		AddInventory(c, equipment)
-		fmt.Printf("Regarde-moi cette merveille ! Je t'ai fabriqué : %s pour %d pièces d'or !\n", equipment, cost)
+		addItem(c, equipment)
+		fmt.Printf("Fabriqué : %s pour %d pièces d'or !\n", equipment, cost)
 	}
 }
-
 
 func removeItems(c *Character, itemsNeeded []string) bool {
 	tempInventory := append([]string{}, c.Inventory...)
@@ -287,123 +256,30 @@ func removeItems(c *Character, itemsNeeded []string) bool {
 	return true
 }
 
-func addItem(c *Character, item string) {
-	if len(c.Inventory) >= 10 {
-		fmt.Println("L'inventaire est plein. Nous ne pouvons accepter :", item)
-		return
-	}
-	c.Inventory = append(c.Inventory, item)
-}
+func WhoAreThey(c *Character) {
+	for {
+		fmt.Println("\n=== LES ARTISTES CACHÉS ===")
+		fmt.Println("1 - Diana")
+		fmt.Println("2 - Michael")
+		fmt.Println("0 - Retour")
+		fmt.Print("Votre choix : ")
 
+		var choice int
+		fmt.Scan(&choice)
 
-func skill(c *Character) {
-	if c.Classe == "Samurai" {
-		c.Sorts = []string{"Tempete du ninja", "Coup de poing"}
-		return
-	} else if c.Classe == "Cowboy" {
-		c.Sorts = []string{"Slowing Time", "Coup de poing"}
-		return
-	}
-	c.Sorts = []string{"Coup de poing"}
-}
-
-func spellBook(c *Character) {
-	for _, j := range c.Sorts {
-		if j == "Boule de Feu" {
+		switch choice {
+		case 1:
+			fmt.Println("Vous avez salué Diana ! Elle vous offre 10 pièces d'or.")
+			c.Money += 10
 			return
+		case 2:
+			fmt.Println("Michael vous chante une chanson, vos PV sont restaurés !")
+			c.CurrentHP = c.MaxHP
+			return
+		case 0:
+			return
+		default:
+			fmt.Println("Choix invalide.")
 		}
 	}
-	c.Sorts = append(c.Sorts, "Boule de Feu")
-}
-
-type Equipment struct {
-	tete  string
-	torse string
-	pieds string
-}
-
-func addEquipment(char *Character, stuff string) {
-	if stuff == "Chapeau de l'aventurier" {
-		if char.Equipment.Tete != "" {
-			char.Inventory = append(char.Inventory, char.Equipment.Tete)
-			char.MaxHP -= 10
-		}
-		char.Equipment.Tete = stuff
-		char.MaxHP += 10
-	} else if stuff == "Tunique de l'aventurier" {
-		if char.Equipment.Torse != "" {
-			char.Inventory = append(char.Inventory, char.Equipment.Torse)
-			char.MaxHP -= 25
-		}
-		char.Equipment.Torse = stuff
-		char.MaxHP += 25
-	} else if stuff == "Bottes de l'aventurier" {
-		if char.Equipment.Pieds != "" {
-			char.Inventory = append(char.Inventory, char.Equipment.Pieds)
-			char.MaxHP -= 15
-		}
-		char.Equipment.Pieds = stuff
-		char.MaxHP += 15
-	} else {
-		fmt.Println("Cet équipement n'existe pas :", stuff)
-		return
-	}
-
-	for i, obj := range char.Inventory {
-		if obj == stuff {
-			char.Inventory = append(char.Inventory[:i], char.Inventory[i+1:]...)
-			break
-		}
-	}
-}
-
-type Monster struct {
-	Name      string
-	MaxHP     int
-	CurrentHP int
-	Damage    int
-}
-
-func isDead(c *Character){
-	if c.CurrentHP <= 0 {
-		fmt.Println("Il a speedrun le respawn 💀")
-	}
-}
-
-
-func initGoblin(c *Monster) {
-	c.Name = "Gobelin d’entrainement"
-	c.MaxHP = 40
-	c.CurrentHP = 40
-	c.Damage = 5
-}
-
-func characterTurn(c *Character, m *Monster) {
-    fmt.Printf("%s : %d/%d PV\n", c.Name, c.CurrentHP, c.MaxHP)
-    fmt.Printf("%s : %d/%d PV\n", m.Name, m.CurrentHP, m.MaxHP)
-    fmt.Println("1 - Attaquer")
-    fmt.Println("2 - Inventaire")
-
-    var choice int
-    fmt.Scan(&choice)
-
-    var action string
-
-    switch choice {
-    case 1:
-        action = "Attaque basique"
-        m.CurrentHP -= 5
-        if m.CurrentHP < 0 {
-            m.CurrentHP = 0
-        }
-        fmt.Printf("Vous utilisez %s et infligez 5 dégâts.\n", action)
-        fmt.Printf("PV restants de %s : %d\n", m.Name, m.CurrentHP)
-        if m.CurrentHP <= 0 {
-            fmt.Println("Vous avez gagné ! C'est pas trop tôt.")
-        }
-    case 2:
-        AccessInventory(c)
-    default:
-        fmt.Println("Choix invalide, ils sont où tes yeux ?!")
-    }
 }
