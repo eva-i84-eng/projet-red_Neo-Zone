@@ -150,7 +150,7 @@ func MainMenu(c *Character) {
 		case 4:
 			Blacksmith(c)
 		case 5:
-			fmt.Println("Aller ouste !")
+			fmt.Println("Allez oust !")
 			return
 		default:
 			fmt.Println("Choisis ce qui est proposé quiquiche")
