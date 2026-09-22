@@ -1,4 +1,4 @@
-//tâche 20, 22
+//tâche 20
 package main
 
 import "fmt"
