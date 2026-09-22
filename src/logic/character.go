@@ -45,7 +45,7 @@ type Monster struct {
 }
 
 
-// 2. INITIALISATION & MAIN
+// 2. INITIALISATIONS
 
 
 func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts []string, maxMana, currentMana int) Character {
@@ -78,51 +78,8 @@ func initGoblin(m *Monster) {
 	m.Exp = 5
 }
 
-func main() {
-	noah := initCharacter("Noah", "vagabond", 1, 100, 80, []string{"Potion de mana"}, []string{"Coup de Poing"}, 100, 100)
-	MainMenu(&noah)
-}
 
-
-// 3. MENU PRINCIPAL
-
-
-func MainMenu(c *Character) {
-	for {
-		fmt.Println("\n=== MENU PRINCIPAL ===")
-		fmt.Println("1 - Afficher les infos du personnage")
-		fmt.Println("2 - Afficher l'inventaire")
-		fmt.Println("3 - Le marchand râleur")
-		fmt.Println("4 - Le forgeron vantard")
-		fmt.Println("5 - Qui sont-ils ?")
-		fmt.Println("6 - Quitter")
-		fmt.Print("Votre choix : ")
-
-		var choice int
-		fmt.Scan(&choice)
-
-		switch choice {
-		case 1:
-			DisplayInfo(c)
-		case 2:
-			AccessInventory(c)
-		case 3:
-			Merchant(c)
-		case 4:
-			Blacksmith(c)
-		case 5:
-			WhoAreThey(c)
-		case 6:
-			fmt.Println("Aller ouste !")
-			return
-		default:
-			fmt.Println("Choisis ce qui est proposé !")
-		}
-	}
-}
-
-
-// 4. GESTION DU PERSONNAGE & INVENTAIRE
+// 3. GESTION DU PERSONNAGE & INVENTAIRE
 
 
 func DisplayInfo(c *Character) {
@@ -156,7 +113,7 @@ func AccessInventory(c *Character) {
 		fmt.Println(i+1, "-", item)
 	}
 
-	fmt.Println("Choisissez un objet à utiliser (ou 0 pour quitter) :")
+	fmt.Println("Choisissez un objet à utiliser (or 0 pour quitter) :")
 	var choice int
 	fmt.Scan(&choice)
 
@@ -174,7 +131,6 @@ func addItem(c *Character, item string) bool {
 	c.Inventory = append(c.Inventory, item)
 	return true
 }
-
 
 func removeItems(c *Character, itemsNeeded []string) bool {
 	tempInventory := append([]string{}, c.Inventory...)
@@ -206,19 +162,6 @@ func upgradeInventorySlot(c *Character) {
 	}
 }
 
-func MainMenu(c *Character) {
-	for {
-		fmt.Println("\n=== MENU PRINCIPAL ===")
-		fmt.Println("1 - Afficher les infos du personnage")
-		fmt.Println("2 - Afficher l'inventaire")
-		fmt.Println("3 - Le marchand râleur")
-		fmt.Println("4 - Le forgeron vantard")
-		fmt.Println("5 - Qui sont-ils ?")
-		fmt.Println("6 - Entraînement")
-		fmt.Println("7 - Quitter")
-		fmt.Print("Votre choix : ")
-
-
 func skill(c *Character) {
 	if c.Classe == "Samurai" {
 		c.Sorts = []string{"Tempete du ninja", "Coup de Poing"}
@@ -230,27 +173,10 @@ func skill(c *Character) {
 	c.Sorts = []string{"Coup de Poing"}
 }
 
-
 func spellBook(c *Character) {
 	for _, j := range c.Sorts {
 		if j == "Boule de Feu" {
 			fmt.Println("Vous connaissez déjà ce sort !")
-
-		switch choice {
-		case 1:
-			DisplayInfo(c)
-		case 2:
-			AccessInventory(c)
-		case 3:
-			Merchant(c)
-		case 4:
-			Blacksmith(c)
-		case 5:
-			WhoAreThey(c)
-		case 6:
-			trainingFight(c)
-		case 7:
-			fmt.Println("Aller ouste !")
 			return
 		}
 	}
@@ -294,7 +220,7 @@ func addEquipment(char *Character, stuff string) {
 }
 
 
-// 5. MARCHANDS & PNJS
+// 4. MARCHANDS & PNJS
 
 
 func Merchant(c *Character) {
@@ -449,7 +375,7 @@ func WhoAreThey(c *Character) {
 }
 
 
-// 6. SYSTÈME DE COMBAT ET OBJETS
+// 5. COMBAT & POTIONS
 
 
 func useItem(c *Character, item string, index int) {
@@ -488,20 +414,12 @@ func takePot(c *Character) {
 	fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
 }
 
-
 func poisonPot(c *Character) {
 	for i := 0; i <= 2; i++ {
 		c.CurrentHP -= 10
 		fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
 		time.Sleep(1 * time.Second)
 	}
-
-func initGoblin(c *Monster) {
-	c.Name = "Gobelin d'entrainement"
-	c.MaxHP = 40
-	c.CurrentHP = 40
-	c.Damage = 5
-	c.Exp = 5
 }
 
 func characterTurn(c *Character, m *Monster) {
@@ -600,6 +518,25 @@ func combat(perso *Character, goblin *Monster) {
 		turn++
 	}
 	experience(perso, goblin)
+}
+
+func trainingFight(player *Character) {
+	var goblin Monster
+	initGoblin(&goblin)
+	turn := 1
+	for player.CurrentHP > 0 && goblin.CurrentHP > 0 {
+		fmt.Println("Tour", turn)
+		characterTurn(player, &goblin)
+		if goblin.CurrentHP > 0 {
+			goblinPattern(&goblin, player, turn)
+		}
+		turn++
+	}
+	if player.CurrentHP <= 0 {
+		fmt.Println("Même en entraînement, tu te rates.")
+	} else {
+		fmt.Println("Victoire. C'est rarissime !")
+	}
 }
 
 func experience(perso *Character, goblin *Monster) {
