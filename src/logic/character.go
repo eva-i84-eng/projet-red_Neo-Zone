@@ -368,13 +368,6 @@ type Monster struct {
 	Exp        int
 }
 
-func isDead(c *Character){
-	if c.CurrentHP <= 0 {
-		fmt.Println("Il a speedrun le respawn 💀")
-	}
-}
-
-
 func initGoblin(c *Monster) {
 	c.Name = "Gobelin d'entrainement"
 	c.MaxHP = 40
