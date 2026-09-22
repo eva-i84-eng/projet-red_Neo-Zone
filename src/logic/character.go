@@ -23,6 +23,9 @@ type Character struct {
 	Equipment         Equipment
 	MaxMana           int
 	CurrentMana       int
+	Initiative        int
+	CurrentExp        int
+	MaxExp            int
 }
 
 type Monster struct {
@@ -125,12 +128,6 @@ func addItem(c *Character, item string) bool {
 	return true
 }
 
-func upgradeInventorySlot(c *Character) {
-	c.MaxInventory += 10
-	c.InventoryUpgrades++
-	fmt.Println("Inventaire augmenté ! Capacité maximale :", c.MaxInventory)
-}
-
 func MainMenu(c *Character) {
 	for {
 		fmt.Println("\n=== MENU PRINCIPAL ===")
@@ -139,7 +136,8 @@ func MainMenu(c *Character) {
 		fmt.Println("3 - Le marchand râleur")
 		fmt.Println("4 - Le forgeron vantard")
 		fmt.Println("5 - Qui sont-ils ?")
-		fmt.Println("6 - Quitter")
+		fmt.Println("6 - Entraînement")
+		fmt.Println("7 - Quitter")
 		fmt.Print("Votre choix : ")
 
 		var choice int
@@ -157,6 +155,8 @@ func MainMenu(c *Character) {
 		case 5:
 			WhoAreThey(c)
 		case 6:
+			trainingFight(c)
+		case 7:
 			fmt.Println("Aller ouste !")
 			return
 		default:
@@ -391,28 +391,6 @@ func addEquipment(char *Character, stuff string) {
 			break
 		}
 	}
-}
-
-func isDead(c *Character) {
-	if c.CurrentHP <= 0 {
-		fmt.Println("Il a speedrun le respawn 💀")
-	}
-}
-
-func initGoblin(m *Monster) {
-	m.Name = "Gobelin d'entrainement"
-	m.MaxHP = 40
-	m.CurrentHP = 40
-	m.Damage = 5
-	m.Exp = 5
-
-type Monster struct {
-	Name       string
-	MaxHP      int
-	CurrentHP  int
-	Damage     int
-	Initiative int
-	Exp        int
 }
 
 func initGoblin(c *Monster) {
