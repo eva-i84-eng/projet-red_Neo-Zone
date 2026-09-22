@@ -5,9 +5,9 @@ import (
 	"time"
 )
 
-
+// ==========================================
 // 1. STRUCTURES
-
+// ==========================================
 
 type Equipment struct {
 	Tete  string
@@ -44,9 +44,9 @@ type Monster struct {
 	Exp        int
 }
 
-
-// 2. INITIALISATIONS
-
+// ==========================================
+// 2. INITIALISATIONS & MAIN
+// ==========================================
 
 func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts []string, maxMana, currentMana int) Character {
 	return Character{
@@ -78,9 +78,87 @@ func initGoblin(m *Monster) {
 	m.Exp = 5
 }
 
+// MODIFICATION : Création dynamique du personnage via des demandes de saisie utilisateur dans le terminal.
+func main() {
+	var name string
+	var classeChoice int
+	var classeName string
 
-// 3. GESTION DU PERSONNAGE & INVENTAIRE
+	fmt.Println("=== CRÉATION DU PERSONNAGE ===")
+	fmt.Print("Entrez votre nom : ")
+	fmt.Scan(&name)
 
+	fmt.Println("\nChoisissez votre classe :")
+	fmt.Println("1 - Vagabond")
+	fmt.Println("2 - Samurai")
+	fmt.Println("3 - Cowboy")
+	fmt.Print("Votre choix : ")
+	fmt.Scan(&classeChoice)
+
+	switch classeChoice {
+	case 2:
+		classeName = "Samurai"
+	case 3:
+		classeName = "Cowboy"
+	default:
+		classeName = "Vagabond"
+	}
+
+	// Création du personnage avec le nom et la classe choisis par le joueur
+	player := initCharacter(name, classeName, 1, 100, 100, []string{"Potion de mana"}, []string{}, 100, 100)
+
+	// Attribution des sorts de départ selon la classe choisie
+	skill(&player)
+
+	// Lancement du menu principal
+	MainMenu(&player)
+}
+
+// ==========================================
+// 3. MENU PRINCIPAL
+// ==========================================
+
+// MODIFICATION : Un deuxième bloc MainMenu() parasite et incomplet avait été collé au milieu du code, il a été supprimé.
+func MainMenu(c *Character) {
+	for {
+		fmt.Println("\n=== MENU PRINCIPAL ===")
+		fmt.Println("1 - Afficher les infos du personnage")
+		fmt.Println("2 - Afficher l'inventaire")
+		fmt.Println("3 - Le marchand râleur")
+		fmt.Println("4 - Le forgeron vantard")
+		fmt.Println("5 - Qui sont-ils ?")
+		fmt.Println("6 - Entraînement")
+		fmt.Println("7 - Quitter")
+		fmt.Print("Votre choix : ")
+
+		var choice int
+		fmt.Scan(&choice)
+
+		switch choice {
+		case 1:
+			DisplayInfo(c)
+		case 2:
+			AccessInventory(c)
+		case 3:
+			Merchant(c)
+		case 4:
+			Blacksmith(c)
+		case 5:
+			WhoAreThey(c)
+		case 6:
+			trainingFight(c)
+		case 7:
+			fmt.Println("Aller ouste !")
+			return
+		default:
+			fmt.Println("Choisis ce qui est proposé !")
+		}
+	}
+}
+
+// ==========================================
+// 4. GESTION DU PERSONNAGE & INVENTAIRE
+// ==========================================
 
 func DisplayInfo(c *Character) {
 	fmt.Println("\n=== INFORMATIONS ===")
@@ -113,7 +191,7 @@ func AccessInventory(c *Character) {
 		fmt.Println(i+1, "-", item)
 	}
 
-	fmt.Println("Choisissez un objet à utiliser (or 0 pour quitter) :")
+	fmt.Println("Choisissez un objet à utiliser (ou 0 pour quitter) :")
 	var choice int
 	fmt.Scan(&choice)
 
@@ -152,6 +230,8 @@ func removeItems(c *Character, itemsNeeded []string) bool {
 	return true
 }
 
+// MODIFICATION : Ajout du mot-clé `func` qui manquait devant la déclaration.
+// MODIFICATION : La fonction était en doublon tout à la fin du fichier, ce doublon a été effacé.
 func upgradeInventorySlot(c *Character) {
 	if c.InventoryUpgrades < 3 {
 		c.MaxInventory += 10
@@ -162,6 +242,7 @@ func upgradeInventorySlot(c *Character) {
 	}
 }
 
+// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
 func skill(c *Character) {
 	if c.Classe == "Samurai" {
 		c.Sorts = []string{"Tempete du ninja", "Coup de Poing"}
@@ -173,6 +254,8 @@ func skill(c *Character) {
 	c.Sorts = []string{"Coup de Poing"}
 }
 
+// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
+// MODIFICATION : Nettoyage d'un bloc `switch` cassé qui avait été copié à l'intérieur de cette fonction.
 func spellBook(c *Character) {
 	for _, j := range c.Sorts {
 		if j == "Boule de Feu" {
@@ -184,6 +267,7 @@ func spellBook(c *Character) {
 	fmt.Println("Vous avez appris : Boule de Feu !")
 }
 
+// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
 func addEquipment(char *Character, stuff string) {
 	if stuff == "Chapeau de l'aventurier" {
 		if char.Equipment.Tete != "" {
@@ -219,10 +303,11 @@ func addEquipment(char *Character, stuff string) {
 	}
 }
 
+// ==========================================
+// 5. MARCHANDS & PNJS
+// ==========================================
 
-// 4. MARCHANDS & PNJS
-
-
+// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
 func Merchant(c *Character) {
 	for {
 		fmt.Println("\n=== MARCHAND RÂLEUR ===")
@@ -297,6 +382,7 @@ func Merchant(c *Character) {
 	}
 }
 
+// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
 func Blacksmith(c *Character) {
 	for {
 		fmt.Println("\n=== LE FORGERON ===")
@@ -347,6 +433,7 @@ func Blacksmith(c *Character) {
 	}
 }
 
+// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
 func WhoAreThey(c *Character) {
 	for {
 		fmt.Println("\n=== LES ARTISTES CACHÉS ===")
@@ -374,10 +461,11 @@ func WhoAreThey(c *Character) {
 	}
 }
 
+// ==========================================
+// 6. COMBAT & POTIONS
+// ==========================================
 
-// 5. COMBAT & POTIONS
-
-
+// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
 func useItem(c *Character, item string, index int) {
 	if item == "Potion de mana" {
 		if c.CurrentMana >= c.MaxMana {
@@ -395,6 +483,7 @@ func useItem(c *Character, item string, index int) {
 	}
 }
 
+// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
 func takePot(c *Character) {
 	index := -1
 	for i, potion := range c.Inventory {
@@ -414,6 +503,8 @@ func takePot(c *Character) {
 	fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
 }
 
+// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
+// MODIFICATION : Fermeture du bloc de la fonction avec `}` (elle était restée ouverte).
 func poisonPot(c *Character) {
 	for i := 0; i <= 2; i++ {
 		c.CurrentHP -= 10
