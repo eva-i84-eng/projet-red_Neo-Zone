@@ -15,4 +15,9 @@ func trainingFight(player *Character) {
 		}
 		turn++
 	}
+	if player.CurrentHP <= 0 {
+		fmt.Println("Même en entraînement, tu te rates.")
+	} else {
+		fmt.Println("Victoire. C'est rarissime !")
+	}
 }
