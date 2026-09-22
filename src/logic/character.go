@@ -21,21 +21,20 @@ type Character struct {
 	Money             int
 	Sorts             []string
 	Equipment         Equipment
-
+	MaxMana           int
+	CurrentMana       int
 }
 
 type Monster struct {
-	Name      string
-	MaxHP     int
-	CurrentHP int
-	Damage    int
-	Initiative        int
-	CurrentExp        int
-	MaxExp            int
-
+	Name       string
+	MaxHP      int
+	CurrentHP  int
+	Damage     int
+	Initiative int
+	Exp        int
 }
 
-func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts []string) Character {
+func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts []string, maxMana, currentMana int) Character {
 	return Character{
 		Name:              name,
 		Classe:            classe,
@@ -49,12 +48,13 @@ func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []s
 		Sorts:             sorts,
 		Money:             100,
 		MaxExp:            100,
-
+		MaxMana:           maxMana,
+		CurrentMana:       currentMana,
 	}
 }
 
 func main() {
-	noah := initCharacter("Noah", "vagabond", 1, 100, 80, []string{"Katana Laser", "Revolver XRAY"}, []string{"Coup de Poing"})
+	noah := initCharacter("Noah", "vagabond", 1, 100, 80, []string{"Potion de mana"}, []string{"Coup de Poing"}, 100, 100)
 	MainMenu(&noah)
 }
 
@@ -64,6 +64,7 @@ func DisplayInfo(c *Character) {
 	fmt.Println("Classe :", c.Classe)
 	fmt.Println("Niveau :", c.Lvl)
 	fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
+	fmt.Println("Mana :", c.CurrentMana, "/", c.MaxMana)
 	fmt.Println("Or :", c.Money)
 	fmt.Println("Sorts :", c.Sorts)
 	fmt.Println("Équipement :", c.Equipment)
@@ -78,15 +79,41 @@ func AccessInventory(c *Character) {
 	fmt.Println("=================================")
 	if len(c.Inventory) == 0 {
 		fmt.Println("Votre inventaire est vide")
-	} else {
-		for i, item := range c.Inventory {
-			fmt.Println(i+1, "-", item)
-		}
+		fmt.Println("Tapez 0 pour revenir au menu principal")
+		var back int
+		fmt.Scan(&back)
+		return
 	}
 
-	fmt.Println("Tapez 0 pour revenir au menu principal")
-	var back int
-	fmt.Scan(&back)
+	for i, item := range c.Inventory {
+		fmt.Println(i+1, "-", item)
+	}
+
+	fmt.Println("Choisissez un objet à utiliser (ou 0 pour quitter) :")
+	var choice int
+	fmt.Scan(&choice)
+
+	if choice > 0 && choice <= len(c.Inventory) {
+		item := c.Inventory[choice-1]
+		useItem(c, item, choice-1)
+	}
+}
+
+func useItem(c *Character, item string, index int) {
+	if item == "Potion de mana" {
+		if c.CurrentMana >= c.MaxMana {
+			fmt.Println("Votre mana est déjà au maximum !")
+			return
+		}
+		c.CurrentMana += 30
+		if c.CurrentMana > c.MaxMana {
+			c.CurrentMana = c.MaxMana
+		}
+		fmt.Printf("Vous utilisez une Potion de Mana. Mana actuel : %d/%d\n", c.CurrentMana, c.MaxMana)
+		c.Inventory = append(c.Inventory[:index], c.Inventory[index+1:]...)
+	} else {
+		fmt.Println("Cet objet ne peut pas être consommé directement d'ici.")
+	}
 }
 
 func addItem(c *Character, item string) bool {
@@ -96,6 +123,12 @@ func addItem(c *Character, item string) bool {
 	}
 	c.Inventory = append(c.Inventory, item)
 	return true
+}
+
+func upgradeInventorySlot(c *Character) {
+	c.MaxInventory += 10
+	c.InventoryUpgrades++
+	fmt.Println("Inventaire augmenté ! Capacité maximale :", c.MaxInventory)
 }
 
 func MainMenu(c *Character) {
@@ -144,6 +177,7 @@ func Merchant(c *Character) {
 		fmt.Println("6 - Cuir de Sanglier (3 pièces d'or)")
 		fmt.Println("7 - Plume de Corbeau (1 pièce d'or)")
 		fmt.Println("8 - Augmenter l'inventaire (30 pièces d'or)")
+		fmt.Println("9 - Potion de mana (5 pièces d'or)")
 		fmt.Println("0 - Retour au menu principal")
 		fmt.Print("Votre choix : ")
 
@@ -183,6 +217,9 @@ func Merchant(c *Character) {
 				fmt.Println("T’es fauché. Upgrade refusé.")
 			}
 			continue
+		case 9:
+			item = "Potion de mana"
+			price = 5
 		case 0:
 			fmt.Println("C'est bon j'ai compris, dégage !")
 			return
@@ -287,22 +324,6 @@ func WhoAreThey(c *Character) {
 		case 1:
 			fmt.Println("Vous avez salué Diana ! Elle vous offre 10 pièces d'or.")
 			c.Money += 10
-
-func skill(c *Character) {
-	if c.Classe == "Samurai" {
-		c.Sorts = []string{"Tempete du ninja", "Coup de poing"}
-		return
-	} else if c.Classe == "Cowboy" {
-		c.Sorts = []string{"Slowing Time", "Coup de poing"}
-		return
-	}
-	c.Sorts = []string{"Coup de poing"}
-}
-
-func spellBook(c *Character) {
-	for _, j := range c.Sorts {
-		if j == "Boule de Feu" {
-			return
 		case 2:
 			fmt.Println("Michael vous chante une chanson, vos PV sont restaurés !")
 			c.CurrentHP = c.MaxHP
@@ -315,13 +336,26 @@ func spellBook(c *Character) {
 	}
 }
 
-	c.Sorts = append(c.Sorts, "Boule de Feu")
+func skill(c *Character) {
+	if c.Classe == "Samurai" {
+		c.Sorts = []string{"Tempete du ninja", "Coup de Poing"}
+		return
+	} else if c.Classe == "Cowboy" {
+		c.Sorts = []string{"Slowing Time", "Coup de Poing"}
+		return
+	}
+	c.Sorts = []string{"Coup de Poing"}
 }
 
-type Equipment struct {
-	Tete  string
-	Torse string
-	Pieds string
+func spellBook(c *Character) {
+	for _, j := range c.Sorts {
+		if j == "Boule de Feu" {
+			fmt.Println("Vous connaissez déjà ce sort !")
+			return
+		}
+	}
+	c.Sorts = append(c.Sorts, "Boule de Feu")
+	fmt.Println("Vous avez appris : Boule de Feu !")
 }
 
 func addEquipment(char *Character, stuff string) {
@@ -359,57 +393,84 @@ func addEquipment(char *Character, stuff string) {
 	}
 }
 
-type Monster struct {
-	Name       string
-	MaxHP      int
-	CurrentHP  int
-	Damage     int
-	Initiative int
-	Exp        int
-}
-
-func isDead(c *Character){
+func isDead(c *Character) {
 	if c.CurrentHP <= 0 {
 		fmt.Println("Il a speedrun le respawn 💀")
 	}
 }
 
-
-func initGoblin(c *Monster) {
-	c.Name = "Gobelin d'entrainement"
-	c.MaxHP = 40
-	c.CurrentHP = 40
-	c.Damage = 5
-	c.Exp = 5
+func initGoblin(m *Monster) {
+	m.Name = "Gobelin d'entrainement"
+	m.MaxHP = 40
+	m.CurrentHP = 40
+	m.Damage = 5
+	m.Exp = 5
 }
 
 func characterTurn(c *Character, m *Monster) {
-    fmt.Printf("%s : %d/%d PV\n", c.Name, c.CurrentHP, c.MaxHP)
-    fmt.Printf("%s : %d/%d PV\n", m.Name, m.CurrentHP, m.MaxHP)
-    fmt.Println("1 - Attaquer")
-    fmt.Println("2 - Inventaire")
+	fmt.Printf("\n--- TOUR DE COMBAT ---\n")
+	fmt.Printf("%s : %d/%d PV | %d/%d Mana\n", c.Name, c.CurrentHP, c.MaxHP, c.CurrentMana, c.MaxMana)
+	fmt.Printf("%s : %d/%d PV\n", m.Name, m.CurrentHP, m.MaxHP)
+	fmt.Println("1 - Utiliser une compétence/sort")
+	fmt.Println("2 - Inventaire")
 
-    var choice int
-    fmt.Scan(&choice)
+	var choice int
+	fmt.Scan(&choice)
 
-    var action string
+	switch choice {
+	case 1:
+		fmt.Println("\n--- CHOISISSEZ UNE ATTAQUE ---")
+		for i, sort := range c.Sorts {
+			cost := 0
+			if sort == "Coup de Poing" {
+				cost = 10
+			} else if sort == "Boule de Feu" {
+				cost = 20
+			}
+			fmt.Printf("%d - %s (Coût: %d Mana)\n", i+1, sort, cost)
+		}
 
-    switch choice {
-    case 1:
-        action = "Attaque basique"
-        m.CurrentHP -= 5
-        if m.CurrentHP < 0 {
-            m.CurrentHP = 0
-        }
-        fmt.Printf("Vous utilisez %s et infligez 5 dégâts.\n", action)
-        fmt.Printf("PV restants de %s : %d\n", m.Name, m.CurrentHP)
-        if m.CurrentHP <= 0 {
-            fmt.Println("Vous avez gagné ! C'est pas trop tôt.")
-        }
-    case 2:
-        AccessInventory(c)
-    default:
-        fmt.Println("Choix invalide, ils sont où tes yeux ?!")
-    }
+		var spellChoice int
+		fmt.Scan(&spellChoice)
+
+		if spellChoice > 0 && spellChoice <= len(c.Sorts) {
+			selectedSpell := c.Sorts[spellChoice-1]
+
+			if selectedSpell == "Coup de Poing" {
+				manaCost := 10
+				if c.CurrentMana < manaCost {
+					fmt.Println("Mana insuffisant pour exécuter Coup de Poing !")
+					return
+				}
+				c.CurrentMana -= manaCost
+				damage := 8
+				m.CurrentHP -= damage
+				fmt.Printf("Vous utilisez %s (-%d Mana) et infligez %d dégâts !\n", selectedSpell, manaCost, damage)
+
+			} else if selectedSpell == "Boule de Feu" {
+				manaCost := 20
+				if c.CurrentMana < manaCost {
+					fmt.Println("Mana insuffisant pour lancer Boule de Feu !")
+					return
+				}
+				c.CurrentMana -= manaCost
+				damage := 18
+				m.CurrentHP -= damage
+				fmt.Printf("Vous utilisez %s (-%d Mana) et infligez %d dégâts !\n", selectedSpell, manaCost, damage)
+			}
+		} else {
+			fmt.Println("Choix d'attaque invalide.")
+			return
+		}
+
+		if m.CurrentHP <= 0 {
+			m.CurrentHP = 0
+			fmt.Println("Vous avez vaincu le monstre !")
+		}
+
+	case 2:
+		AccessInventory(c)
+	default:
+		fmt.Println("Choix invalide !")
+	}
 }
->>>>>>> main
