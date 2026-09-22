@@ -405,6 +405,22 @@ func initGoblin(m *Monster) {
 	m.CurrentHP = 40
 	m.Damage = 5
 	m.Exp = 5
+
+type Monster struct {
+	Name       string
+	MaxHP      int
+	CurrentHP  int
+	Damage     int
+	Initiative int
+	Exp        int
+}
+
+func initGoblin(c *Monster) {
+	c.Name = "Gobelin d'entrainement"
+	c.MaxHP = 40
+	c.CurrentHP = 40
+	c.Damage = 5
+	c.Exp = 5
 }
 
 func characterTurn(c *Character, m *Monster) {
