@@ -471,6 +471,14 @@ func WhoAreThey(c *Character) {
 // 6. COMBAT, EXPÉRIENCE & POTIONS
 // ==========================================
 
+func poisonPot(c *Character){
+	for i:=0; i<=2; i++{
+		c.CurrentHP -= 10
+		fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
+		time.Sleep(1 * time.Second)
+	}
+}
+
 func useItem(c *Character, item string, index int) {
 	if item == "Potion de vie" {
 		if c.CurrentHP >= c.MaxHP {
@@ -483,6 +491,13 @@ func useItem(c *Character, item string, index int) {
 		}
 		fmt.Printf("Vous utilisez une Potion de Vie. PV actuels : %d/%d\n", c.CurrentHP, c.MaxHP)
 		c.Inventory = append(c.Inventory[:index], c.Inventory[index+1:]...)
+
+	} else if item == "Potion de poison" {
+		fmt.Println("Vous buvez la potion de poison... Mauvaise idée !")
+		// Consomme l'objet dans l'inventaire
+		c.Inventory = append(c.Inventory[:index], c.Inventory[index+1:]...)
+		// Applique les dégâts sur la durée
+		poisonPot(c)
 
 	} else if item == "Potion de mana" {
 		if c.CurrentMana >= c.MaxMana {
