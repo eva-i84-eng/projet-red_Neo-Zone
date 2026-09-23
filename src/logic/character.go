@@ -33,12 +33,14 @@ type Character struct {
 	Initiative        int
 	CurrentExp        int
 	MaxExp            int
+	BonusDamage       int // Dégâts bonus gagnés avec les niveaux
 	HasTalkedToSpielberg bool
 	HasTalkedToABBA      bool
 }
 
 type Monster struct {
 	Name       string
+	Lvl        int
 	MaxHP      int
 	CurrentHP  int
 	Damage     int
@@ -65,19 +67,23 @@ func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []s
 		Money:             100,
 		CurrentExp:        0,
 		MaxExp:            100,
+		BonusDamage:       0,
 		MaxMana:           maxMana,
 		CurrentMana:       currentMana,
 		Initiative:        10,
 	}
 }
 
-func initGoblin(m *Monster) {
-	m.Name = "Gobelin d'entrainement"
-	m.MaxHP = 40
-	m.CurrentHP = 40
-	m.Damage = 5
+// Le gobelin s'adapte au niveau du joueur
+func initGoblin(m *Monster, playerLvl int) {
+	m.Lvl = playerLvl
+	m.Name = fmt.Sprintf("Gobelin d'entraînement (Niv. %d)", m.Lvl)
+	// Les statistiques du gobelin augmentent avec son niveau
+	m.MaxHP = 40 + (playerLvl-1)*15
+	m.CurrentHP = m.MaxHP
+	m.Damage = 5 + (playerLvl-1)*3
 	m.Initiative = 5
-	m.Exp = 5
+	m.Exp = 25 + (playerLvl-1)*10
 }
 
 func main() {
@@ -105,20 +111,14 @@ func main() {
 		classeName = "Vagabond"
 	}
 
-	// Création personnage avec nom et classe choisis par joueur
 	player := initCharacter(name, classeName, 1, 100, 100, []string{"Potion de mana"}, []string{}, 100, 100)
-
-	// Attribution sorts de départ selon classe choisie
 	skill(&player)
-
-	// Lancement menu principal
 	MainMenu(&player)
 }
 
 // ==========================================
 // 3. MENU PRINCIPAL
 // ==========================================
-
 
 func MainMenu(c *Character) {
 	for {
@@ -166,8 +166,10 @@ func DisplayInfo(c *Character) {
 	fmt.Println("Nom :", c.Name)
 	fmt.Println("Classe :", c.Classe)
 	fmt.Println("Niveau :", c.Lvl)
+	fmt.Printf("Expérience : %d / %d\n", c.CurrentExp, c.MaxExp)
 	fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
 	fmt.Println("Mana :", c.CurrentMana, "/", c.MaxMana)
+	fmt.Println("Bonus de dégâts : +", c.BonusDamage)
 	fmt.Println("Or :", c.Money)
 	fmt.Println("Sorts :", c.Sorts)
 	fmt.Println("Équipement :", c.Equipment)
@@ -264,7 +266,6 @@ func spellBook(c *Character) {
 }
 
 func addEquipment(char *Character, stuff string) {
-	// 1. retirer objet à équiper de l'inventaire
 	for i, obj := range char.Inventory {
 		if obj == stuff {
 			char.Inventory = append(char.Inventory[:i], char.Inventory[i+1:]...)
@@ -272,7 +273,6 @@ func addEquipment(char *Character, stuff string) {
 		}
 	}
 
-	// 2. Équiper objet et remettre l'ancien dans l'inventaire s'il existe
 	switch stuff {
 	case "Chapeau de l'aventurier":
 		if char.Equipment.Tete != "" {
@@ -431,7 +431,6 @@ func Blacksmith(c *Character) {
 	}
 }
 
-
 func WhoAreThey(c *Character) {
 	for {
 		fmt.Println("\n=== LES ARTISTES CACHÉS ===")
@@ -469,7 +468,7 @@ func WhoAreThey(c *Character) {
 }
 
 // ==========================================
-// 6. COMBAT & POTIONS
+// 6. COMBAT, EXPÉRIENCE & POTIONS
 // ==========================================
 
 func useItem(c *Character, item string, index int) {
@@ -510,33 +509,6 @@ func useItem(c *Character, item string, index int) {
 	}
 }
 
-func takePot(c *Character) {
-	index := -1
-	for i, potion := range c.Inventory {
-		if potion == "Potion de vie" {
-			index = i
-		}
-	}
-	if index == -1 {
-		fmt.Println("Tes potions sont vides, ton avenir aussi.")
-		return
-	}
-	c.Inventory = append(c.Inventory[:index], c.Inventory[index+1:]...)
-	c.CurrentHP += 50
-	if c.CurrentHP > c.MaxHP {
-		c.CurrentHP = c.MaxHP
-	}
-	fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
-}
-
-func poisonPot(c *Character) {
-	for i := 0; i <= 2; i++ {
-		c.CurrentHP -= 10
-		fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
-		time.Sleep(1 * time.Second)
-	}
-}
-
 func characterTurn(c *Character, m *Monster) {
 	fmt.Printf("\n--- TOUR DE COMBAT ---\n")
 	fmt.Printf("%s : %d/%d PV | %d/%d Mana\n", c.Name, c.CurrentHP, c.MaxHP, c.CurrentMana, c.MaxMana)
@@ -556,8 +528,6 @@ func characterTurn(c *Character, m *Monster) {
 				cost = 10
 			} else if sort == "Boule de Feu" {
 				cost = 20
-			} else if sort == "Tempete du ninja" || sort == "Slowing Time" {
-				cost = 0
 			}
 			fmt.Printf("%d - %s (Coût: %d Mana)\n", i+1, sort, cost)
 		}
@@ -567,39 +537,33 @@ func characterTurn(c *Character, m *Monster) {
 
 		if spellChoice > 0 && spellChoice <= len(c.Sorts) {
 			selectedSpell := c.Sorts[spellChoice-1]
+			baseDamage := 0
 
 			if selectedSpell == "Coup de Poing" {
-				manaCost := 10
-				if c.CurrentMana < manaCost {
-					fmt.Println("Mana insuffisant pour exécuter Coup de Poing !")
+				if c.CurrentMana < 10 {
+					fmt.Println("Mana insuffisant !")
 					return
 				}
-				c.CurrentMana -= manaCost
-				damage := 12
-				m.CurrentHP -= damage
-				fmt.Printf("Vous utilisez %s (-%d Mana) et infligez %d dégâts !\n", selectedSpell, manaCost, damage)
+				c.CurrentMana -= 10
+				baseDamage = 12
 
 			} else if selectedSpell == "Boule de Feu" {
-				manaCost := 20
-				if c.CurrentMana < manaCost {
-					fmt.Println("Mana insuffisant pour lancer Boule de Feu !")
+				if c.CurrentMana < 20 {
+					fmt.Println("Mana insuffisant !")
 					return
 				}
-				c.CurrentMana -= manaCost
-				damage := 18
-				m.CurrentHP -= damage
-				fmt.Printf("Vous utilisez %s (-%d Mana) et infligez %d dégâts !\n", selectedSpell, manaCost, damage)
+				c.CurrentMana -= 20
+				baseDamage = 18
 
-			} else if selectedSpell == "Tempete du ninja" {
-				damage := 8
-				m.CurrentHP -= damage
-				fmt.Printf("Vous utilisez %s et infligez %d dégâts !\n", selectedSpell, damage)
-
-			} else if selectedSpell == "Slowing Time" {
-				damage := 8
-				m.CurrentHP -= damage
-				fmt.Printf("Vous utilisez %s et infligez %d dégâts !\n", selectedSpell, damage)
+			} else if selectedSpell == "Tempete du ninja" || selectedSpell == "Slowing Time" {
+				baseDamage = 8
 			}
+
+			// Prise en compte du bonus de dégâts accordé par le niveau
+			totalDamage := baseDamage + c.BonusDamage
+			m.CurrentHP -= totalDamage
+			fmt.Printf("Vous utilisez %s et infligez %d dégâts ! (dont +%d bonus)\n", selectedSpell, totalDamage, c.BonusDamage)
+
 		} else {
 			fmt.Println("Choix d'attaque invalide.")
 			return
@@ -624,60 +588,53 @@ func goblinPattern(c *Monster, player *Character, turn int) {
 		damage = c.Damage * 2
 	}
 	player.CurrentHP -= damage
-	fmt.Println("Gobelin d'entrainement inflige à", player.Name, damage, "de dégâts")
+	fmt.Printf("%s inflige à %s %d dégâts !\n", c.Name, player.Name, damage)
 	fmt.Println("PV :", player.CurrentHP, "/", player.MaxHP)
-}
-
-func combat(perso *Character, goblin *Monster) {
-	turn := 1
-	for perso.CurrentHP > 0 && goblin.CurrentHP > 0 {
-		if perso.Initiative >= goblin.Initiative {
-			characterTurn(perso, goblin)
-			if goblin.CurrentHP > 0 {
-				goblinPattern(goblin, perso, turn)
-			}
-		} else {
-			goblinPattern(goblin, perso, turn)
-			if perso.CurrentHP > 0 {
-				characterTurn(perso, goblin)
-			}
-		}
-		isDead(perso)
-		turn++
-	}
-	experience(perso, goblin)
 }
 
 func trainingFight(player *Character) {
 	var goblin Monster
-	initGoblin(&goblin)
+	initGoblin(&goblin, player.Lvl)
+
+	fmt.Printf("\nUn %s apparaît !\n", goblin.Name)
 	turn := 1
+
 	for player.CurrentHP > 0 && goblin.CurrentHP > 0 {
-		fmt.Println("Tour", turn)
+		fmt.Println("\n--- Tour", turn, "---")
 		characterTurn(player, &goblin)
+
 		if goblin.CurrentHP > 0 {
 			goblinPattern(&goblin, player, turn)
 		}
 		turn++
 	}
+
 	if player.CurrentHP <= 0 {
-		fmt.Println("Même en entraînement, tu te rates.")
+		fmt.Println("\nMême en entraînement, tu te rates. Tes PV sont restaurés à 1.")
+		player.CurrentHP = 1
 	} else {
-		fmt.Println("Victoire. C'est rarissime !")
+		fmt.Println("\nVictoire !")
+		experience(player, &goblin) // Gain expérience après victoire
 	}
 }
 
 func experience(perso *Character, goblin *Monster) {
 	if goblin.CurrentHP <= 0 {
 		perso.CurrentExp += goblin.Exp
+		fmt.Printf("Vous gagnez %d points d'expérience !\n", goblin.Exp)
 
 		for perso.CurrentExp >= perso.MaxExp {
 			perso.CurrentExp -= perso.MaxExp
 			perso.Lvl++
 			perso.MaxExp += 50
+			perso.MaxHP += 15
+			perso.CurrentHP = perso.MaxHP // Soin complet au passage de niveau
+			perso.MaxMana += 10
+			perso.CurrentMana = perso.MaxMana
+			perso.BonusDamage += 3 // Augmentation des dégâts
 
-			perso.MaxHP += 10
-			perso.CurrentHP += 10
+			fmt.Printf("\n🎉 NIVEAU SUPÉRIEUR ! Vous êtes maintenant niveau %d !\n", perso.Lvl)
+			fmt.Printf("PV Max: %d | Mana Max: %d | Bonus Dégâts: +%d\n", perso.MaxHP, perso.MaxMana, perso.BonusDamage)
 		}
 	}
 }
