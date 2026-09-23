@@ -264,37 +264,42 @@ func spellBook(c *Character) {
 }
 
 func addEquipment(char *Character, stuff string) {
-	if stuff == "Chapeau de l'aventurier" {
+	// 1. retirer objet à équiper de l'inventaire
+	for i, obj := range char.Inventory {
+		if obj == stuff {
+			char.Inventory = append(char.Inventory[:i], char.Inventory[i+1:]...)
+			break
+		}
+	}
+
+	// 2. Équiper objet et remettre l'ancien dans l'inventaire s'il existe
+	switch stuff {
+	case "Chapeau de l'aventurier":
 		if char.Equipment.Tete != "" {
 			char.Inventory = append(char.Inventory, char.Equipment.Tete)
 			char.MaxHP -= 10
 		}
 		char.Equipment.Tete = stuff
 		char.MaxHP += 10
-	} else if stuff == "Tunique de l'aventurier" {
+
+	case "Tunique de l'aventurier":
 		if char.Equipment.Torse != "" {
 			char.Inventory = append(char.Inventory, char.Equipment.Torse)
 			char.MaxHP -= 25
 		}
 		char.Equipment.Torse = stuff
 		char.MaxHP += 25
-	} else if stuff == "Bottes de l'aventurier" {
+
+	case "Bottes de l'aventurier":
 		if char.Equipment.Pieds != "" {
 			char.Inventory = append(char.Inventory, char.Equipment.Pieds)
 			char.MaxHP -= 15
 		}
 		char.Equipment.Pieds = stuff
 		char.MaxHP += 15
-	} else {
-		fmt.Println("Cet équipement n'existe pas :", stuff)
-		return
-	}
 
-	for i, obj := range char.Inventory {
-		if obj == stuff {
-			char.Inventory = append(char.Inventory[:i], char.Inventory[i+1:]...)
-			break
-		}
+	default:
+		fmt.Println("Cet équipement n'existe pas :", stuff)
 	}
 }
 
@@ -478,7 +483,6 @@ func useItem(c *Character, item string, index int) {
 			c.CurrentHP = c.MaxHP
 		}
 		fmt.Printf("Vous utilisez une Potion de Vie. PV actuels : %d/%d\n", c.CurrentHP, c.MaxHP)
-		// Retire la potion de l'inventaire
 		c.Inventory = append(c.Inventory[:index], c.Inventory[index+1:]...)
 
 	} else if item == "Potion de mana" {
@@ -491,11 +495,18 @@ func useItem(c *Character, item string, index int) {
 			c.CurrentMana = c.MaxMana
 		}
 		fmt.Printf("Vous utilisez une Potion de Mana. Mana actuel : %d/%d\n", c.CurrentMana, c.MaxMana)
-		// Retire la potion de l'inventaire
+		c.Inventory = append(c.Inventory[:index], c.Inventory[index+1:]...)
+
+	} else if item == "Chapeau de l'aventurier" || item == "Tunique de l'aventurier" || item == "Bottes de l'aventurier" {
+		addEquipment(c, item)
+		fmt.Printf("Vous avez équipé : %s !\n", item)
+
+	} else if item == "Livre de Sort : Boule de Feu" {
+		spellBook(c)
 		c.Inventory = append(c.Inventory[:index], c.Inventory[index+1:]...)
 
 	} else {
-		fmt.Println("Cet objet ne peut pas être consommé directement d'ici.")
+		fmt.Println("Cet objet ne peut pas être consommé ou équipé directement.")
 	}
 }
 
