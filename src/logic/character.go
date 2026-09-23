@@ -575,7 +575,7 @@ func characterTurn(c *Character, m *Monster) {
 					return
 				}
 				c.CurrentMana -= manaCost
-				damage := 8
+				damage := 12
 				m.CurrentHP -= damage
 				fmt.Printf("Vous utilisez %s (-%d Mana) et infligez %d dégâts !\n", selectedSpell, manaCost, damage)
 
@@ -591,12 +591,12 @@ func characterTurn(c *Character, m *Monster) {
 				fmt.Printf("Vous utilisez %s (-%d Mana) et infligez %d dégâts !\n", selectedSpell, manaCost, damage)
 
 			} else if selectedSpell == "Tempete du ninja" {
-				damage := 12
+				damage := 8
 				m.CurrentHP -= damage
 				fmt.Printf("Vous utilisez %s et infligez %d dégâts !\n", selectedSpell, damage)
 
 			} else if selectedSpell == "Slowing Time" {
-				damage := 10
+				damage := 8
 				m.CurrentHP -= damage
 				fmt.Printf("Vous utilisez %s et infligez %d dégâts !\n", selectedSpell, damage)
 			}
