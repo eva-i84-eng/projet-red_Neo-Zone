@@ -33,6 +33,8 @@ type Character struct {
 	Initiative        int
 	CurrentExp        int
 	MaxExp            int
+	HasTalkedToSpielberg bool
+	HasTalkedToABBA      bool
 }
 
 type Monster struct {
@@ -78,7 +80,6 @@ func initGoblin(m *Monster) {
 	m.Exp = 5
 }
 
-// MODIFICATION : Création dynamique du personnage via des demandes de saisie utilisateur dans le terminal.
 func main() {
 	var name string
 	var classeChoice int
@@ -104,13 +105,13 @@ func main() {
 		classeName = "Vagabond"
 	}
 
-	// Création du personnage avec le nom et la classe choisis par le joueur
+	// Création personnage avec nom et classe choisis par joueur
 	player := initCharacter(name, classeName, 1, 100, 100, []string{"Potion de mana"}, []string{}, 100, 100)
 
-	// Attribution des sorts de départ selon la classe choisie
+	// Attribution sorts de départ selon classe choisie
 	skill(&player)
 
-	// Lancement du menu principal
+	// Lancement menu principal
 	MainMenu(&player)
 }
 
@@ -118,7 +119,7 @@ func main() {
 // 3. MENU PRINCIPAL
 // ==========================================
 
-// MODIFICATION : Un deuxième bloc MainMenu() parasite et incomplet avait été collé au milieu du code, il a été supprimé.
+
 func MainMenu(c *Character) {
 	for {
 		fmt.Println("\n=== MENU PRINCIPAL ===")
@@ -148,7 +149,7 @@ func MainMenu(c *Character) {
 		case 6:
 			trainingFight(c)
 		case 7:
-			fmt.Println("Aller ouste !")
+			fmt.Println("Allez ouste !")
 			return
 		default:
 			fmt.Println("Choisis ce qui est proposé !")
@@ -230,8 +231,6 @@ func removeItems(c *Character, itemsNeeded []string) bool {
 	return true
 }
 
-// MODIFICATION : Ajout du mot-clé `func` qui manquait devant la déclaration.
-// MODIFICATION : La fonction était en doublon tout à la fin du fichier, ce doublon a été effacé.
 func upgradeInventorySlot(c *Character) {
 	if c.InventoryUpgrades < 3 {
 		c.MaxInventory += 10
@@ -242,7 +241,6 @@ func upgradeInventorySlot(c *Character) {
 	}
 }
 
-// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
 func skill(c *Character) {
 	if c.Classe == "Samurai" {
 		c.Sorts = []string{"Tempete du ninja", "Coup de Poing"}
@@ -254,8 +252,6 @@ func skill(c *Character) {
 	c.Sorts = []string{"Coup de Poing"}
 }
 
-// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
-// MODIFICATION : Nettoyage d'un bloc `switch` cassé qui avait été copié à l'intérieur de cette fonction.
 func spellBook(c *Character) {
 	for _, j := range c.Sorts {
 		if j == "Boule de Feu" {
@@ -267,7 +263,6 @@ func spellBook(c *Character) {
 	fmt.Println("Vous avez appris : Boule de Feu !")
 }
 
-// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
 func addEquipment(char *Character, stuff string) {
 	if stuff == "Chapeau de l'aventurier" {
 		if char.Equipment.Tete != "" {
@@ -307,7 +302,6 @@ func addEquipment(char *Character, stuff string) {
 // 5. MARCHANDS & PNJS
 // ==========================================
 
-// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
 func Merchant(c *Character) {
 	for {
 		fmt.Println("\n=== MARCHAND RÂLEUR ===")
@@ -357,14 +351,14 @@ func Merchant(c *Character) {
 				c.Money -= 30
 				upgradeInventorySlot(c)
 			} else {
-				fmt.Println("T’es fauché. Upgrade refusé.")
+				fmt.Println("T'es fauché. Upgrade refusé.")
 			}
 			continue
 		case 9:
 			item = "Potion de mana"
 			price = 5
 		case 0:
-			fmt.Println("C'est bon j'ai compris, dégage !")
+			fmt.Println("C'est bon j'ai compris, dégages !")
 			return
 		default:
 			fmt.Println("Choix invalide !")
@@ -382,7 +376,6 @@ func Merchant(c *Character) {
 	}
 }
 
-// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
 func Blacksmith(c *Character) {
 	for {
 		fmt.Println("\n=== LE FORGERON ===")
@@ -433,12 +426,12 @@ func Blacksmith(c *Character) {
 	}
 }
 
-// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
+
 func WhoAreThey(c *Character) {
 	for {
 		fmt.Println("\n=== LES ARTISTES CACHÉS ===")
-		fmt.Println("1 - Diana")
-		fmt.Println("2 - Michael")
+		fmt.Println("1 - Steven Spielberg")
+		fmt.Println("2 - ABBA")
 		fmt.Println("0 - Retour")
 		fmt.Print("Votre choix : ")
 
@@ -447,12 +440,21 @@ func WhoAreThey(c *Character) {
 
 		switch choice {
 		case 1:
-			fmt.Println("Vous avez salué Diana ! Elle vous offre 10 pièces d'or.")
-			c.Money += 10
+			if c.HasTalkedToSpielberg {
+				fmt.Println("Vous avez déjà salué S. Spielberg !")
+			} else {
+				fmt.Println("Vous avez salué S.Spielberg ! Il vous raconte une histoire et vous offre 10 pièces d'or !")
+				c.Money += 10
+				c.HasTalkedToSpielberg = true
+			}
 		case 2:
-			fmt.Println("Michael vous chante une chanson, vos PV sont restaurés !")
-			c.CurrentHP = c.MaxHP
-			return
+			if c.HasTalkedToABBA {
+				fmt.Println("Vous avez déjà écouté ABBA !")
+			} else {
+				fmt.Println("ABBA vous chante une chanson, vos PV sont restaurés !")
+				c.CurrentHP = c.MaxHP
+				c.HasTalkedToABBA = true
+			}
 		case 0:
 			return
 		default:
@@ -465,9 +467,21 @@ func WhoAreThey(c *Character) {
 // 6. COMBAT & POTIONS
 // ==========================================
 
-// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
 func useItem(c *Character, item string, index int) {
-	if item == "Potion de mana" {
+	if item == "Potion de vie" {
+		if c.CurrentHP >= c.MaxHP {
+			fmt.Println("Vos points de vie sont déjà au maximum !")
+			return
+		}
+		c.CurrentHP += 50
+		if c.CurrentHP > c.MaxHP {
+			c.CurrentHP = c.MaxHP
+		}
+		fmt.Printf("Vous utilisez une Potion de Vie. PV actuels : %d/%d\n", c.CurrentHP, c.MaxHP)
+		// Retire la potion de l'inventaire
+		c.Inventory = append(c.Inventory[:index], c.Inventory[index+1:]...)
+
+	} else if item == "Potion de mana" {
 		if c.CurrentMana >= c.MaxMana {
 			fmt.Println("Votre mana est déjà au maximum !")
 			return
@@ -477,13 +491,14 @@ func useItem(c *Character, item string, index int) {
 			c.CurrentMana = c.MaxMana
 		}
 		fmt.Printf("Vous utilisez une Potion de Mana. Mana actuel : %d/%d\n", c.CurrentMana, c.MaxMana)
+		// Retire la potion de l'inventaire
 		c.Inventory = append(c.Inventory[:index], c.Inventory[index+1:]...)
+
 	} else {
 		fmt.Println("Cet objet ne peut pas être consommé directement d'ici.")
 	}
 }
 
-// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
 func takePot(c *Character) {
 	index := -1
 	for i, potion := range c.Inventory {
@@ -503,8 +518,6 @@ func takePot(c *Character) {
 	fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
 }
 
-// MODIFICATION : Ajout du mot-clé `func` devant la fonction.
-// MODIFICATION : Fermeture du bloc de la fonction avec `}` (elle était restée ouverte).
 func poisonPot(c *Character) {
 	for i := 0; i <= 2; i++ {
 		c.CurrentHP -= 10
