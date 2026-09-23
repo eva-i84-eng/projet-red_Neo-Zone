@@ -131,20 +131,34 @@ func main() {
 		break
 	}
 
-	fmt.Println("\nChoisissez votre classe :")
-	fmt.Println("1 - Vagabond")
-	fmt.Println("2 - Samurai")
-	fmt.Println("3 - Cowboy")
-	fmt.Print("Votre choix : ")
-	fmt.Scan(&classeChoice)
+	for {
+		fmt.Println("\nChoisissez votre classe :")
+		fmt.Println("1 - Vagabond")
+		fmt.Println("2 - Samurai")
+		fmt.Println("3 - Cowboy")
+		fmt.Print("Votre choix : ")
 
-	switch classeChoice {
-	case 2:
-		classeName = "Samurai"
-	case 3:
-		classeName = "Cowboy"
-	default:
-		classeName = "Vagabond"
+		// Vérification des choix invalides
+		_, err := fmt.Scan(&classeChoice)
+		if err != nil {
+			fmt.Println("Erreur : Veuillez entrer un nombre valide.")
+			var dump string
+			fmt.Scanln(&dump) // Vide le choix invalidé
+			continue
+		}
+
+		switch classeChoice {
+		case 1:
+			classeName = "Vagabond"
+		case 2:
+			classeName = "Samurai"
+		case 3:
+			classeName = "Cowboy"
+		default:
+			fmt.Println("Erreur : Choix invalide ! Veuillez saisir 1, 2 ou 3.")
+			continue
+		}
+		break
 	}
 
 	player := initCharacter(name, classeName, 1, 100, 100, []string{"Potion de mana"}, []string{}, 100, 100)
