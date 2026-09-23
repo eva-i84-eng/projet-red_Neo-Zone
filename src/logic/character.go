@@ -141,7 +141,7 @@ func main() {
 		// Vérification des choix invalides
 		_, err := fmt.Scan(&classeChoice)
 		if err != nil {
-			fmt.Println("Erreur : Veuillez entrer un nombre valide.")
+			fmt.Println("Erreur : Veuillez entrer un NOMBRE valide.")
 			var dump string
 			fmt.Scanln(&dump) // Vide le choix invalidé
 			continue
@@ -155,7 +155,7 @@ func main() {
 		case 3:
 			classeName = "Cowboy"
 		default:
-			fmt.Println("Erreur : Choix invalide ! Veuillez saisir 1, 2 ou 3.")
+			fmt.Println("Erreur : Choix invalide ! Veuillez saisir 1, 2 ou 3, pfff.")
 			continue
 		}
 		break
@@ -221,9 +221,45 @@ func DisplayInfo(c *Character) {
 	fmt.Println("Mana :", c.CurrentMana, "/", c.MaxMana)
 	fmt.Println("Bonus de dégâts : +", c.BonusDamage)
 	fmt.Println("Or :", c.Money)
-	fmt.Println("Sorts :", c.Sorts)
-	fmt.Println("Équipement :", c.Equipment)
-	fmt.Println("Tapez 0 pour revenir au menu principal")
+
+	fmt.Print("Sorts : ")
+	if len(c.Sorts) == 0 {
+		fmt.Print("Aucun")
+	} else {
+		for i, sort := range c.Sorts {
+			fmt.Print(sort)
+			if i < len(c.Sorts)-1 {
+				fmt.Print(", ")
+			}
+		}
+	}
+	fmt.Println()
+
+	var equipList []string
+	if c.Equipment.Tete != "" {
+		equipList = append(equipList, "Tête: "+c.Equipment.Tete)
+	}
+	if c.Equipment.Torse != "" {
+		equipList = append(equipList, "Torse: "+c.Equipment.Torse)
+	}
+	if c.Equipment.Pieds != "" {
+		equipList = append(equipList, "Pieds: "+c.Equipment.Pieds)
+	}
+
+	fmt.Print("Équipement : ")
+	if len(equipList) == 0 {
+		fmt.Print("Aucun")
+	} else {
+		for i, eq := range equipList {
+			fmt.Print(eq)
+			if i < len(equipList)-1 {
+				fmt.Print(", ")
+			}
+		}
+	}
+	fmt.Println()
+
+	fmt.Println("\nTapez 0 pour revenir au menu principal")
 	var back int
 	fmt.Scan(&back)
 }
