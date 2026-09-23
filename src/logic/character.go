@@ -17,24 +17,24 @@ type Equipment struct {
 }
 
 type Character struct {
-	Name              string
-	Classe            string
-	Lvl               int
-	MaxHP             int
-	CurrentHP         int
-	MaxHPFinal        int
-	Inventory         []string
-	MaxInventory      int
-	InventoryUpgrades int
-	Money             int
-	Sorts             []string
-	Equipment         Equipment
-	MaxMana           int
-	CurrentMana       int
-	Initiative        int
-	CurrentExp        int
-	MaxExp            int
-	BonusDamage       int // Dégâts bonus gagnés avec les niveaux
+	Name                 string
+	Classe               string
+	Lvl                  int
+	MaxHP                int
+	CurrentHP            int
+	MaxHPFinal           int
+	Inventory            []string
+	MaxInventory         int
+	InventoryUpgrades    int
+	Money                int
+	Sorts                []string
+	Equipment            Equipment
+	MaxMana              int
+	CurrentMana          int
+	Initiative           int
+	CurrentExp           int
+	MaxExp               int
+	BonusDamage          int // Dégâts bonus gagnés avec les niveaux
 	HasTalkedToSpielberg bool
 	HasTalkedToABBA      bool
 }
@@ -54,26 +54,26 @@ type Monster struct {
 // ==========================================
 
 func processName(input string) (string, bool) {
-    if len(input) == 0 {
-        return "", false
-    }
+	if len(input) == 0 {
+		return "", false
+	}
 
-    runes := []rune(input)
+	runes := []rune(input)
 
-    for i, r := range runes {
-        if !unicode.IsLetter(r) {
-            return "", false
-        }
+	for i, r := range runes {
+		if !unicode.IsLetter(r) {
+			return "", false
+		}
 
-        // Première lettre en majuscule, les suivantes : minuscules
-        if i == 0 {
-            runes[i] = unicode.ToUpper(r)
-        } else {
-            runes[i] = unicode.ToLower(r)
-        }
-    }
+		// Première lettre en majuscule, les suivantes : minuscules
+		if i == 0 {
+			runes[i] = unicode.ToUpper(r)
+		} else {
+			runes[i] = unicode.ToLower(r)
+		}
+	}
 
-    return string(runes), true
+	return string(runes), true
 }
 
 func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts []string, maxMana, currentMana int) Character {
@@ -287,7 +287,7 @@ func skill(c *Character) {
 		c.Sorts = []string{"Slowing Time", "Coup de Poing"}
 		return
 	}
-	c.Sorts = []string{"Coup de Poing"}
+	c.Sorts = []string{"Coup de Bâton", "Coup de Poing"}
 }
 
 func spellBook(c *Character) {
@@ -507,8 +507,8 @@ func WhoAreThey(c *Character) {
 // 6. COMBAT, EXPÉRIENCE & POTIONS
 // ==========================================
 
-func poisonPot(c *Character){
-	for i:=0; i<=2; i++{
+func poisonPot(c *Character) {
+	for i := 0; i <= 2; i++ {
 		c.CurrentHP -= 10
 		fmt.Println("PV :", c.CurrentHP, "/", c.MaxHP)
 		time.Sleep(1 * time.Second)
@@ -529,7 +529,7 @@ func useItem(c *Character, item string, index int) {
 		c.Inventory = append(c.Inventory[:index], c.Inventory[index+1:]...)
 
 	} else if item == "Potion de poison" {
-		fmt.Println("Vous buvez la potion de poison... Mauvaise idée !")
+		fmt.Println("Vous buvez la potion de poison... T'as pas inventé l'eau chaude toi !")
 		// Consomme l'objet dans l'inventaire
 		c.Inventory = append(c.Inventory[:index], c.Inventory[index+1:]...)
 		// Applique les dégâts sur la durée
@@ -579,6 +579,8 @@ func characterTurn(c *Character, m *Monster) {
 				cost = 10
 			} else if sort == "Boule de Feu" {
 				cost = 20
+			} else if sort == "Coup de Bâton" {
+				cost = 0
 			}
 			fmt.Printf("%d - %s (Coût: %d Mana)\n", i+1, sort, cost)
 		}
@@ -590,7 +592,9 @@ func characterTurn(c *Character, m *Monster) {
 			selectedSpell := c.Sorts[spellChoice-1]
 			baseDamage := 0
 
-			if selectedSpell == "Coup de Poing" {
+			if selectedSpell == "Coup de Bâton" {
+				baseDamage = 8
+			} else if selectedSpell == "Coup de Poing" {
 				if c.CurrentMana < 10 {
 					fmt.Println("Mana insuffisant !")
 					return
