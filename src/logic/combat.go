@@ -9,7 +9,6 @@ import (
 // MÉCANIQUES DE COMBAT & EFFETS
 // ==========================================
 
-// Applique les dégâts du poison sur la durée
 func poisonPot(c *Character) {
 	for i := 0; i <= 2; i++ {
 		c.CurrentHP -= 10
@@ -18,16 +17,22 @@ func poisonPot(c *Character) {
 	}
 }
 
-// Gestion du tour du joueur en combat
-func characterTurn(c *Character, m *Monster) {
+func characterTurn(c *Character, m *Monster) bool {
 	fmt.Printf("\n--- TOUR DE COMBAT ---\n")
 	fmt.Printf("%s : %d/%d PV | %d/%d Mana\n", c.Name, c.CurrentHP, c.MaxHP, c.CurrentMana, c.MaxMana)
 	fmt.Printf("%s : %d/%d PV\n", m.Name, m.CurrentHP, m.MaxHP)
 	fmt.Println("1 - Utiliser une compétence/sort")
 	fmt.Println("2 - Inventaire")
+	fmt.Println("3 - Fuir le combat")
 
 	var choice int
-	fmt.Scan(&choice)
+	_, err := fmt.Scan(&choice)
+	if err != nil {
+		var dump string
+		fmt.Scanln(&dump)
+		fmt.Println("Choix invalide ! Le gobelin profite de votre hésitation pour attaquer !")
+		return false
+	}
 
 	switch choice {
 	case 1:
@@ -45,7 +50,13 @@ func characterTurn(c *Character, m *Monster) {
 		}
 
 		var spellChoice int
-		fmt.Scan(&spellChoice)
+		_, errSpell := fmt.Scan(&spellChoice)
+		if errSpell != nil {
+			var dump string
+			fmt.Scanln(&dump)
+			fmt.Println("Choix d'attaque invalide ! Le gobelin en profite pour attaquer !")
+			return false
+		}
 
 		if spellChoice > 0 && spellChoice <= len(c.Sorts) {
 			selectedSpell := c.Sorts[spellChoice-1]
@@ -55,16 +66,16 @@ func characterTurn(c *Character, m *Monster) {
 				baseDamage = 8
 			} else if selectedSpell == "Coup de Poing" {
 				if c.CurrentMana < 10 {
-					fmt.Println("Mana insuffisant !")
-					return
+					fmt.Println("Mana insuffisant ! Le gobelin en profite pour attaquer !")
+					return false
 				}
 				c.CurrentMana -= 10
 				baseDamage = 12
 
 			} else if selectedSpell == "Boule de Feu" {
 				if c.CurrentMana < 20 {
-					fmt.Println("Mana insuffisant !")
-					return
+					fmt.Println("Mana insuffisant ! Le gobelin en profite pour attaquer !")
+					return false
 				}
 				c.CurrentMana -= 20
 				baseDamage = 18
@@ -73,30 +84,36 @@ func characterTurn(c *Character, m *Monster) {
 				baseDamage = 8
 			}
 
-			// Prise en compte du bonus de dégâts accordé par le niveau
 			totalDamage := baseDamage + c.BonusDamage
 			m.CurrentHP -= totalDamage
 			fmt.Printf("Vous utilisez %s et infligez %d dégâts ! (dont +%d bonus)\n", selectedSpell, totalDamage, c.BonusDamage)
 
 		} else {
-			fmt.Println("Choix d'attaque invalide.")
-			return
+			fmt.Println("Choix d'attaque invalide ! Le gobelin en profite pour attaquer !")
+			return false
 		}
 
 		if m.CurrentHP <= 0 {
 			m.CurrentHP = 0
 			fmt.Println("Vous avez vaincu le monstre !")
 		}
+		return true
 
 	case 2:
 		AccessInventory(c)
+		return true
+
+	case 3:
+		fmt.Println("Tu es une poule mouillée !")
+		m.CurrentHP = -1
+		return true
 
 	default:
-		fmt.Println("Choix invalide !")
+		fmt.Println("Choix invalide ! Le gobelin en profite pour attaquer !")
+		return false
 	}
 }
 
-// Comportement et pattern d'attaque du gobelin
 func goblinPattern(c *Monster, player *Character, turn int) {
 	damage := c.Damage
 	if turn%3 == 0 {
@@ -107,7 +124,6 @@ func goblinPattern(c *Monster, player *Character, turn int) {
 	fmt.Println("PV :", player.CurrentHP, "/", player.MaxHP)
 }
 
-// Boucle principale d'un combat d'entraînement
 func trainingFight(player *Character) {
 	var goblin Monster
 	initGoblin(&goblin, player.Lvl)
@@ -117,7 +133,12 @@ func trainingFight(player *Character) {
 
 	for player.CurrentHP > 0 && goblin.CurrentHP > 0 {
 		fmt.Println("\n--- Tour", turn, "---")
+
 		characterTurn(player, &goblin)
+
+		if goblin.CurrentHP == -1 {
+			return
+		}
 
 		if goblin.CurrentHP > 0 {
 			goblinPattern(&goblin, player, turn)
@@ -130,7 +151,7 @@ func trainingFight(player *Character) {
 		player.CurrentHP = 1
 	} else {
 		fmt.Println("\nVictoire !")
-		experience(player, &goblin) // Gain d'expérience après la victoire
+		experience(player, &goblin)
 	}
 }
 
