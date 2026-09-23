@@ -556,6 +556,8 @@ func characterTurn(c *Character, m *Monster) {
 				cost = 10
 			} else if sort == "Boule de Feu" {
 				cost = 20
+			} else if sort == "Tempete du ninja" || sort == "Slowing Time" {
+				cost = 0
 			}
 			fmt.Printf("%d - %s (Coût: %d Mana)\n", i+1, sort, cost)
 		}
@@ -587,6 +589,16 @@ func characterTurn(c *Character, m *Monster) {
 				damage := 18
 				m.CurrentHP -= damage
 				fmt.Printf("Vous utilisez %s (-%d Mana) et infligez %d dégâts !\n", selectedSpell, manaCost, damage)
+
+			} else if selectedSpell == "Tempete du ninja" {
+				damage := 12
+				m.CurrentHP -= damage
+				fmt.Printf("Vous utilisez %s et infligez %d dégâts !\n", selectedSpell, damage)
+
+			} else if selectedSpell == "Slowing Time" {
+				damage := 10
+				m.CurrentHP -= damage
+				fmt.Printf("Vous utilisez %s et infligez %d dégâts !\n", selectedSpell, damage)
 			}
 		} else {
 			fmt.Println("Choix d'attaque invalide.")
@@ -600,6 +612,7 @@ func characterTurn(c *Character, m *Monster) {
 
 	case 2:
 		AccessInventory(c)
+
 	default:
 		fmt.Println("Choix invalide !")
 	}
