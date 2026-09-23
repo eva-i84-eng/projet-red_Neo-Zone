@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
+	"unicode"
 )
 
 // ==========================================
@@ -53,32 +54,26 @@ type Monster struct {
 // ==========================================
 
 func processName(input string) (string, bool) {
-	var cleaned []rune
+    if len(input) == 0 {
+        return "", false
+    }
 
-	for _, r := range input {
-		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= 'à' && r <= 'ÿ') || (r >= 'À' && r <= 'ß') {
-			cleaned = append(cleaned, r)
-		}
-	}
-	if len(cleaned) == 0 {
-		return "", false
-	}
-	for i := 0; i < len(cleaned); i++ {
-		r := cleaned[i]
-		if i == 0 {
-			// Convertit la première lettre en majuscule si minuscule
-			if r >= 'a' && r <= 'z' {
-				cleaned[i] = r - ('a' - 'A')
-			}
-		} else {
-			// Convertit les lettres suivantes en minuscule si majuscules
-			if r >= 'A' && r <= 'Z' {
-				cleaned[i] = r + ('a' - 'A')
-			}
-		}
-	}
+    runes := []rune(input)
 
-	return string(cleaned), true
+    for i, r := range runes {
+        if !unicode.IsLetter(r) {
+            return "", false
+        }
+
+        // Première lettre en majuscule, les suivantes : minuscules
+        if i == 0 {
+            runes[i] = unicode.ToUpper(r)
+        } else {
+            runes[i] = unicode.ToLower(r)
+        }
+    }
+
+    return string(runes), true
 }
 
 func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts []string, maxMana, currentMana int) Character {
