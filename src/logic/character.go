@@ -52,6 +52,35 @@ type Monster struct {
 // 2. INITIALISATIONS & MAIN
 // ==========================================
 
+func processName(input string) (string, bool) {
+	var cleaned []rune
+
+	for _, r := range input {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= 'à' && r <= 'ÿ') || (r >= 'À' && r <= 'ß') {
+			cleaned = append(cleaned, r)
+		}
+	}
+	if len(cleaned) == 0 {
+		return "", false
+	}
+	for i := 0; i < len(cleaned); i++ {
+		r := cleaned[i]
+		if i == 0 {
+			// Convertit la première lettre en majuscule si minuscule
+			if r >= 'a' && r <= 'z' {
+				cleaned[i] = r - ('a' - 'A')
+			}
+		} else {
+			// Convertit les lettres suivantes en minuscule si majuscules
+			if r >= 'A' && r <= 'Z' {
+				cleaned[i] = r + ('a' - 'A')
+			}
+		}
+	}
+
+	return string(cleaned), true
+}
+
 func initCharacter(name, classe string, lvl, maxHP, currentHP int, inventory []string, sorts []string, maxMana, currentMana int) Character {
 	return Character{
 		Name:              name,
@@ -87,13 +116,25 @@ func initGoblin(m *Monster, playerLvl int) {
 }
 
 func main() {
+	var rawName string
 	var name string
 	var classeChoice int
 	var classeName string
 
 	fmt.Println("=== CRÉATION DU PERSONNAGE ===")
-	fmt.Print("Entrez votre nom : ")
-	fmt.Scan(&name)
+	for {
+		fmt.Print("Entrez votre nom : ")
+		fmt.Scan(&rawName)
+
+		formatted, valid := processName(rawName)
+		if !valid {
+			fmt.Println("Erreur : Les numéros ne sont pas acceptés dans le pseudo !")
+			continue
+		}
+
+		name = formatted
+		break
+	}
 
 	fmt.Println("\nChoisissez votre classe :")
 	fmt.Println("1 - Vagabond")
