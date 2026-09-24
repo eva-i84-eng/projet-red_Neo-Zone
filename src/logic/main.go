@@ -28,39 +28,6 @@ func processName(input string) (string, bool) {
 	return string(runes), true
 }
 
-package main
-
-import (
-	"fmt"
-	"unicode"
-)
-
-// Traitement du nom : autorise lettres et espaces,
-// puis met une majuscule au début de chaque mot.
-func processName(input string) (string, bool) {
-	if len(input) == 0 {
-		return "", false
-	}
-
-	runes := []rune(input)
-
-	for i, r := range runes {
-		// On autorise uniquement lettres et espaces
-		if !unicode.IsLetter(r) && !unicode.IsSpace(r) {
-			return "", false
-		}
-
-		// Majuscule au premier caractère ou juste après un espace
-		if i == 0 || (i > 0 && unicode.IsSpace(runes[i-1])) {
-			runes[i] = unicode.ToUpper(r)
-		} else {
-			runes[i] = unicode.ToLower(r)
-		}
-	}
-
-	return string(runes), true
-}
-
 func main() {
 	var rawName string
 	var name string
