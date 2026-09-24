@@ -13,11 +13,45 @@ func processName(input string) (string, bool) {
 	runes := []rune(input)
 
 	for i, r := range runes {
-		if !unicode.IsLetter(r) {
+		// On autorise lettres ET espaces
+		if !unicode.IsLetter(r) && !unicode.IsSpace(r) {
 			return "", false
 		}
 
-		if i == 0 {
+		if i == 0 || (i > 0 && unicode.IsSpace(runes[i-1])) {
+			runes[i] = unicode.ToUpper(r)
+		} else {
+			runes[i] = unicode.ToLower(r)
+		}
+	}
+
+	return string(runes), true
+}
+
+package main
+
+import (
+	"fmt"
+	"unicode"
+)
+
+// Traitement du nom : autorise lettres et espaces,
+// puis met une majuscule au début de chaque mot.
+func processName(input string) (string, bool) {
+	if len(input) == 0 {
+		return "", false
+	}
+
+	runes := []rune(input)
+
+	for i, r := range runes {
+		// On autorise uniquement lettres et espaces
+		if !unicode.IsLetter(r) && !unicode.IsSpace(r) {
+			return "", false
+		}
+
+		// Majuscule au premier caractère ou juste après un espace
+		if i == 0 || (i > 0 && unicode.IsSpace(runes[i-1])) {
 			runes[i] = unicode.ToUpper(r)
 		} else {
 			runes[i] = unicode.ToLower(r)
@@ -34,13 +68,15 @@ func main() {
 	var classeName string
 
 	fmt.Println("=== CRÉATION DU PERSONNAGE ===")
+
+	// Saisie du nom
 	for {
 		fmt.Print("Entrez votre nom : ")
-		fmt.Scan(&rawName)
+		fmt.Scanln(&rawName)
 
 		formatted, valid := processName(rawName)
 		if !valid {
-			fmt.Println("Erreur : Les numéros ne sont pas acceptés dans le pseudo !")
+			fmt.Println("Erreur : Les chiffres et symboles ne sont pas acceptés dans le pseudo !")
 			continue
 		}
 
@@ -48,6 +84,7 @@ func main() {
 		break
 	}
 
+	// Choix de la classe
 	for {
 		fmt.Println("\nChoisissez votre classe :")
 		fmt.Println("1 - Vagabond")
@@ -59,7 +96,7 @@ func main() {
 		if err != nil {
 			fmt.Println("Erreur : Veuillez entrer un NOMBRE valide.")
 			var dump string
-			fmt.Scanln(&dump)
+			fmt.Scanln(&dump) // Vide le choix invalide
 			continue
 		}
 
@@ -71,12 +108,13 @@ func main() {
 		case 3:
 			classeName = "Cowboy"
 		default:
-			fmt.Println("Erreur : Choix invalide ! Veuillez saisir 1, 2 ou 3, pfff.")
+			fmt.Println("Erreur : Choix invalide ! Veuillez saisir 1, 2 ou 3.")
 			continue
 		}
 		break
 	}
 
+	// Initialisation et lancement du jeu
 	player := initCharacter(name, classeName, 1, 100, 100, []string{"Potion de mana"}, []string{}, 100, 100)
 	skill(&player)
 	MainMenu(&player)
