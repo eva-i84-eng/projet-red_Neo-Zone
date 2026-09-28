@@ -1,4 +1,4 @@
-PROJET RED : NEO ZONE PAR EVA? BRICE ET AMINE (B1 CYBER)
+PROJET RED : NEO ZONE PAR EVA, BRICE ET AMINE (B1 CYBER)
 
 Une aventure RPG en mode texte développée en Go dans un univers mêlant samouraïs, cowboys et vagabonds.
 
